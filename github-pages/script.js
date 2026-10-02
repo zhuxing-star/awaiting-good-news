@@ -10,20 +10,43 @@ const musicButton = document.getElementById('music-button')
 const container = document.getElementById('container')
 const openCardButton = document.getElementById('open-card')
 const replayButton = document.getElementById('replay')
+const memoryImages = [...document.querySelectorAll('.memory img')]
+const portraitImage = document.querySelector('.portrait')
 
 let timeline = null
-const backgroundMusic = new Audio('./music/bgMusic.mp3')
-backgroundMusic.preload = 'auto'
+const backgroundMusic = new Audio()
+backgroundMusic.preload = 'none'
 backgroundMusic.loop = true
 backgroundMusic.volume = .82
 let fireworksFrame = null
 let fireworksRunning = false
 const unlockDate = new Date(2026, 9, 28, 0, 0, 0)
 
+function loadImage(image) {
+  if (!image || image.src || !image.dataset.src) return
+  image.src = image.dataset.src
+}
+
+function prepareMusic() {
+  if (backgroundMusic.src) return
+  backgroundMusic.src = './music/bgMusic.m4a'
+  backgroundMusic.preload = 'auto'
+  backgroundMusic.load()
+}
+
+function preloadStoryAssets() {
+  memoryImages.forEach((image, index) => {
+    window.setTimeout(() => loadImage(image), index * 90)
+  })
+  window.setTimeout(() => loadImage(portraitImage), 450)
+}
+
 function enterGift() {
   lockScreen.hidden = true
   startSign.hidden = false
   musicButton.hidden = false
+  prepareMusic()
+  loadImage(memoryImages[0])
 }
 
 function updateCountdown() {
@@ -139,9 +162,15 @@ function buildTimeline() {
 }
 
 async function playMusic() {
-  await backgroundMusic.play()
-  musicButton.classList.add('is-playing')
-  musicButton.setAttribute('aria-label', '暂停音乐')
+  prepareMusic()
+  try {
+    await backgroundMusic.play()
+    musicButton.classList.add('is-playing')
+    musicButton.setAttribute('aria-label', '暂停音乐')
+  } catch {
+    musicButton.classList.remove('is-playing')
+    musicButton.setAttribute('aria-label', '音乐加载失败')
+  }
 }
 
 async function toggleMusic() {
@@ -211,9 +240,10 @@ function stopFireworks() {
 
 startButton.addEventListener('click', async () => {
   await document.fonts.load('16px "Ma Shan Zheng"')
+  preloadStoryAssets()
   startSign.style.display = 'none'
   container.setAttribute('aria-hidden', 'false')
-  await playMusic()
+  playMusic()
   buildTimeline().play(0)
 })
 
