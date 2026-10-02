@@ -1,6 +1,6 @@
 @font-face {
   font-family: "Ma Shan Zheng";
-  src: url("./fonts/MaShanZheng-Regular.ttf?v=20261002-17") format("truetype");
+  src: url("./fonts/MaShanZheng-Regular.ttf?v=20261002-18") format("truetype");
   font-style: normal;
   font-weight: 400;
   font-display: block;
@@ -26,6 +26,35 @@ button { font: inherit; }
 button:disabled { cursor: wait; opacity: .55; }
 [hidden] { display: none !important; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+.loading-screen {
+  position: fixed; inset: 0; z-index: 300; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: max(28px, env(safe-area-inset-top)) 28px max(28px, env(safe-area-inset-bottom)); overflow: hidden;
+  text-align: center; background: var(--paper); transition: opacity .55s ease, visibility .55s ease;
+}
+.loading-screen.is-complete { opacity: 0; visibility: hidden; pointer-events: none; }
+.loading-screen::before {
+  content: ""; position: absolute; inset: 0; opacity: .04; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.loading-for { position: absolute; top: max(28px, env(safe-area-inset-top)); left: 28px; margin: 0; color: #8b8175; font-size: 15px; letter-spacing: .12em; }
+.loading-dots { position: absolute; top: max(30px, env(safe-area-inset-top)); right: 27px; }
+.loading-dots i { display: inline-block; width: 8px; height: 8px; margin-left: 6px; border-radius: 50%; background: #f08bad; }
+.loading-dots i:nth-child(2) { background: #68bddd; transform: translateY(5px); }
+.loading-dots i:nth-child(3) { background: #7ec67d; transform: translateY(-2px); }
+.loading-gift { position: relative; width: 96px; height: 88px; margin-bottom: 28px; }
+.loading-gift::before { content: ""; position: absolute; left: 8px; bottom: 0; width: 80px; height: 55px; border: 2px solid #333; border-radius: 3px; background: white; }
+.loading-gift::after { content: ""; position: absolute; left: 2px; bottom: 52px; width: 92px; height: 18px; border: 2px solid #333; border-radius: 3px; background: var(--paper); }
+.loading-gift span { position: absolute; z-index: 2; left: 47px; bottom: 1px; width: 2px; height: 68px; background: #333; }
+.loading-gift i::before, .loading-gift i::after { content: ""; position: absolute; top: 3px; width: 27px; height: 23px; border: 2px solid #333; border-radius: 60% 50%; background: var(--paper); }
+.loading-gift i::before { left: 25px; transform: rotate(22deg); }
+.loading-gift i::after { right: 25px; transform: rotate(-22deg); }
+.loading-screen h1 { margin: 0 0 34px; font-size: clamp(30px, 8vw, 42px); font-weight: 400; letter-spacing: .05em; }
+.loading-progress { width: min(340px, 82vw); height: 8px; overflow: hidden; border-radius: 20px; background: #eee7de; box-shadow: inset 0 1px 2px rgba(80,65,45,.08); }
+.loading-progress span { display: block; width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #ef89aa, #6abfdb, #78c47b); transition: width .16s linear; }
+.loading-percent { margin: 13px 0 0; color: #6f675f; font-size: 18px; letter-spacing: .08em; font-variant-numeric: tabular-nums; }
+.loading-note { max-width: 410px; margin: 30px 0 0; color: #9b9185; font-size: 14px; line-height: 1.8; letter-spacing: .04em; }
+.loading-retry { margin-top: 22px; padding: 11px 24px; border: 1px solid var(--green); border-radius: 6px; color: #2e6750; background: white; }
 
 .lock-screen {
   position: fixed; inset: 0; z-index: 200; display: flex; flex-direction: column; align-items: center;

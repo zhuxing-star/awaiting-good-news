@@ -1,5 +1,12 @@
 /* Adapted from abandon888/HappyBirthday under the MIT License. */
 const { gsap } = window
+const loadingScreen = document.getElementById('loading-screen')
+const loadingTitle = document.getElementById('loading-title')
+const loadingProgress = document.querySelector('.loading-progress')
+const loadingProgressBar = document.getElementById('loading-progress-bar')
+const loadingPercent = document.getElementById('loading-percent')
+const loadingNote = document.getElementById('loading-note')
+const loadingRetry = document.getElementById('loading-retry')
 const lockScreen = document.getElementById('lock-screen')
 const unlockForm = document.getElementById('unlock-form')
 const unlockPassword = document.getElementById('unlock-password')
@@ -14,6 +21,27 @@ const memoryImages = [...document.querySelectorAll('.memory img')]
 const portraitImage = document.querySelector('.portrait')
 const storyImages = [...memoryImages, portraitImage]
 const startButtonLabel = startButton.textContent
+const assetSizes = new Map([
+  ['./music/bgMusic.m4a?v=20261002-18', 3338013],
+  ['./fonts/MaShanZheng-Regular.ttf?v=20261002-18', 214384],
+  ['./images/memories/leifeng.webp', 186398],
+  ['./images/memories/west-lake.webp', 151434],
+  ['./images/memories/sunset.webp', 44962],
+  ['./images/memories/night-skyline.webp', 94430],
+  ['./images/memories/fountain.webp', 98004],
+  ['./images/memories/temple-rain.webp', 187272],
+  ['./images/memories/blessing-cup.webp', 52852],
+  ['./images/memories/rain-chain.webp', 317502],
+  ['./images/memories/mural.webp', 271962],
+  ['./images/memories/forest-path.webp', 299086],
+  ['./images/memories/canal.webp', 188910],
+  ['./images/memories/statue.webp', 186334],
+  ['./images/memories/alley.webp', 306894],
+  ['./images/birthday-star.webp', 213224]
+])
+const totalAssetBytes = [...assetSizes.values()].reduce((sum, size) => sum + size, 0)
+const loadedAssetBytes = new Map([...assetSizes.keys()].map(url => [url, 0]))
+const completedAssets = new Set()
 
 let timeline = null
 const backgroundMusic = new Audio()
@@ -26,25 +54,50 @@ let fireworksFrame = null
 let fireworksRunning = false
 const unlockDate = new Date(2026, 9, 28, 0, 0, 0)
 
-function loadImageAttempt(image, attempt = 0) {
-  return new Promise((resolve, reject) => {
-    const source = image.dataset.src
-    const separator = source.includes('?') ? '&' : '?'
-    const url = attempt ? `${source}${separator}retry=${attempt}` : source
-    const handleLoad = async () => {
-      image.removeEventListener('error', handleError)
-      try { await image.decode?.() } catch { /* The decoded image can still render. */ }
-      resolve(image)
+function updateLoadingProgress(url, bytes, complete = false) {
+  const expected = assetSizes.get(url) || bytes
+  loadedAssetBytes.set(url, Math.max(loadedAssetBytes.get(url) || 0, Math.min(bytes, expected)))
+  if (complete) {
+    loadedAssetBytes.set(url, expected)
+    completedAssets.add(url)
+  }
+  const loaded = [...loadedAssetBytes.values()].reduce((sum, value) => sum + value, 0)
+  const calculated = Math.floor((loaded / totalAssetBytes) * 100)
+  const percent = completedAssets.size === assetSizes.size ? 100 : Math.min(99, calculated)
+  loadingProgressBar.style.width = `${percent}%`
+  loadingPercent.textContent = `${percent}%`
+  loadingProgress.setAttribute('aria-valuenow', String(percent))
+}
+
+async function downloadAsset(url, attempt = 0) {
+  try {
+    const separator = url.includes('?') ? '&' : '?'
+    const requestUrl = attempt ? `${url}${separator}retry=${attempt}` : url
+    const response = await fetch(requestUrl, { cache: 'force-cache' })
+    if (!response.ok) throw new Error(`Asset request failed: ${response.status}`)
+    if (!response.body?.getReader) {
+      const blob = await response.blob()
+      updateLoadingProgress(url, assetSizes.get(url), true)
+      return blob
     }
-    const handleError = () => {
-      image.removeEventListener('load', handleLoad)
-      if (attempt >= 2) { reject(new Error(`Image failed to load: ${source}`)); return }
-      window.setTimeout(() => loadImageAttempt(image, attempt + 1).then(resolve, reject), 450 * (attempt + 1))
+    const reader = response.body.getReader()
+    const chunks = []
+    let received = 0
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+      chunks.push(value)
+      received += value.byteLength
+      updateLoadingProgress(url, received)
     }
-    image.addEventListener('load', handleLoad, { once: true })
-    image.addEventListener('error', handleError, { once: true })
-    image.src = url
-  })
+    const blob = new Blob(chunks, { type: response.headers.get('content-type') || 'application/octet-stream' })
+    updateLoadingProgress(url, assetSizes.get(url), true)
+    return blob
+  } catch (error) {
+    if (attempt >= 2) throw error
+    await new Promise(resolve => window.setTimeout(resolve, 700 * (attempt + 1)))
+    return downloadAsset(url, attempt + 1)
+  }
 }
 
 function loadImage(image) {
@@ -52,30 +105,30 @@ function loadImage(image) {
   if (image.complete && image.naturalWidth > 0) return Promise.resolve(image)
   if (!image.dataset.src) return Promise.reject(new Error('Image source is missing'))
   if (!imageLoadPromises.has(image)) {
-    const promise = loadImageAttempt(image).catch(error => {
-      imageLoadPromises.delete(image)
-      throw error
-    })
+    const source = image.dataset.src
+    const promise = downloadAsset(source)
+      .then(blob => new Promise((resolve, reject) => {
+        image.addEventListener('load', () => resolve(image), { once: true })
+        image.addEventListener('error', reject, { once: true })
+        image.src = URL.createObjectURL(blob)
+      }))
+      .then(async loadedImage => {
+        try { await loadedImage.decode?.() } catch { /* The loaded image can still render. */ }
+        return loadedImage
+      })
+      .catch(error => {
+        imageLoadPromises.delete(image)
+        throw error
+      })
     imageLoadPromises.set(image, promise)
   }
   return imageLoadPromises.get(image)
 }
 
-async function fetchMusic(attempt = 0) {
-  try {
-    const response = await fetch('./music/bgMusic.m4a?v=20261002-17', { cache: 'force-cache' })
-    if (!response.ok) throw new Error(`Music request failed: ${response.status}`)
-    return await response.blob()
-  } catch (error) {
-    if (attempt >= 2) throw error
-    await new Promise(resolve => window.setTimeout(resolve, 700 * (attempt + 1)))
-    return fetchMusic(attempt + 1)
-  }
-}
-
 function prepareMusic() {
   if (musicReadyPromise) return musicReadyPromise
-  musicReadyPromise = fetchMusic()
+  const source = './music/bgMusic.m4a?v=20261002-18'
+  musicReadyPromise = downloadAsset(source)
     .then(blob => new Promise((resolve, reject) => {
       backgroundMusic.src = URL.createObjectURL(blob)
       backgroundMusic.preload = 'auto'
@@ -90,28 +143,45 @@ function prepareMusic() {
   return musicReadyPromise
 }
 
-function preloadStoryAssets() {
-  return Promise.allSettled(storyImages.map(loadImage))
+async function preloadStoryAssets() {
+  let nextIndex = 0
+  const worker = async () => {
+    while (nextIndex < storyImages.length) {
+      const image = storyImages[nextIndex]
+      nextIndex += 1
+      await loadImage(image)
+    }
+  }
+  await Promise.all(Array.from({ length: 4 }, worker))
 }
 
 function prepareExperience() {
-  startButton.disabled = true
-  startButton.textContent = '正在准备音乐…'
-  musicButton.disabled = true
-  musicButton.setAttribute('aria-label', '音乐加载中')
-  preloadStoryAssets()
-  prepareMusic()
-    .then(() => {
-      startButton.disabled = false
-      startButton.textContent = startButtonLabel
-      musicButton.disabled = false
-      musicButton.setAttribute('aria-label', '播放音乐')
-    })
-    .catch(() => {
-      startButton.disabled = false
-      startButton.textContent = startButtonLabel
-      musicButton.setAttribute('aria-label', '音乐加载失败')
-    })
+  startButton.disabled = false
+  startButton.textContent = startButtonLabel
+  musicButton.disabled = false
+  musicButton.setAttribute('aria-label', '播放音乐')
+}
+
+async function loadCriticalAssets() {
+  loadingRetry.hidden = true
+  try {
+    const fontUrl = './fonts/MaShanZheng-Regular.ttf?v=20261002-18'
+    await Promise.all([
+      prepareMusic(),
+      preloadStoryAssets(),
+      downloadAsset(fontUrl).then(() => document.fonts.load('16px "Ma Shan Zheng"'))
+    ])
+    updateLoadingProgress(fontUrl, assetSizes.get(fontUrl), true)
+    prepareExperience()
+    loadingTitle.textContent = '礼物准备好了'
+    loadingNote.textContent = '所有内容已经加载完成。'
+    window.setTimeout(() => loadingScreen.classList.add('is-complete'), 450)
+    window.setTimeout(() => { loadingScreen.hidden = true }, 1100)
+  } catch {
+    loadingTitle.textContent = '加载遇到一点问题'
+    loadingNote.textContent = '当前网络不太稳定，请重新加载后再试一次。'
+    loadingRetry.hidden = false
+  }
 }
 
 function enterGift() {
@@ -352,8 +422,9 @@ replayButton.addEventListener('click', () => {
 
 document.addEventListener('touchmove', event => event.preventDefault(), { passive: false })
 window.addEventListener('resize', () => { if (fireworksRunning) { stopFireworks(); startFireworks() } })
-window.setTimeout(() => {
-  preloadStoryAssets()
-  prepareMusic().catch(() => {})
-}, 800)
+loadingRetry.addEventListener('click', () => window.location.reload())
+startButton.disabled = true
+musicButton.disabled = true
+musicButton.setAttribute('aria-label', '音乐加载中')
 initializeLock()
+loadCriticalAssets()
