@@ -38,6 +38,10 @@ button { font: inherit; }
   padding: 24px; text-align: center; background: var(--paper);
 }
 .start-sign p { margin: 0 0 32px; color: #555; font-size: 16px; letter-spacing: .03em; }
+.music-arrow {
+  position: fixed; top: max(66px, calc(env(safe-area-inset-top) + 44px)); right: max(48px, calc(env(safe-area-inset-right) + 48px));
+  color: var(--pink); font-size: 34px; line-height: 1; transform: rotate(-5deg); animation: pointMusic 1.15s ease-in-out infinite alternate;
+}
 .start-sign button, .nine button, .card > button {
   padding: 15px 26px; border: 1px solid var(--green); border-radius: 6px; color: #333; background: transparent;
   letter-spacing: .08em; cursor: pointer; transition: .25s ease;
@@ -63,12 +67,9 @@ button { font: inherit; }
 
 .five { position: absolute; }
 .idea { position: absolute; left: 20px; right: 20px; margin: 0; font-size: clamp(26px, 6vw, 45px); line-height: 1.55; }
-.idea-3 strong { display: inline-block; margin-left: 5px; padding: 1px 8px 3px; border-radius: 4px; color: white; background: var(--blue); font-weight: 400; }
-.idea-5 { font-size: clamp(42px, 10vw, 76px); }
-.idea-5 span, .idea-5 i { display: inline-block; }
-.idea-5 i { color: var(--pink); font-style: normal; }
-.idea-6 { display: flex; justify-content: center; gap: 18px; }
-.idea-6 span { display: inline-block; font-size: clamp(120px, 34vw, 230px); }
+.idea-2 strong { display: inline-block; margin: 0 5px; padding: 1px 8px 3px; border-radius: 4px; color: white; background: var(--blue); font-weight: 400; }
+.idea-3--big { display: flex; justify-content: center; gap: 18px; }
+.idea-3--big span { display: inline-block; font-size: clamp(120px, 34vw, 230px); }
 
 .memories { z-index: 2; display: grid; place-items: center; }
 .memory {
@@ -128,6 +129,7 @@ button { font: inherit; }
 .nine { z-index: 5; }
 .nine p { margin: 0 0 28px; font-size: clamp(27px, 6vw, 44px); font-weight: 300; }
 .nine button, .card > button { pointer-events: auto; background: white; }
+.nine button { opacity: 0; visibility: hidden; }
 
 .card { z-index: 8; background: #fff8ef; }
 .card article {
@@ -146,6 +148,7 @@ button { font: inherit; }
 #fireworks { position: fixed; inset: 0; z-index: 7; width: 100%; height: 100%; pointer-events: none; }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pointMusic { from { translate: -3px 4px; opacity: .55; } to { translate: 4px -5px; opacity: 1; } }
 
 @media (max-width: 520px) {
   .start-sign p { font-size: 14px; }
