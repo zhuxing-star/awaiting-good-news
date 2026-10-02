@@ -127,9 +127,9 @@ function buildTimeline() {
 
   timeline
     .to('.memories', { duration: .1, autoAlpha: 0 })
-    .fromTo('.balloons img', { opacity: .9, y: 1400 }, { duration: 2.5, opacity: 1, y: -1000, stagger: .2 })
-    .fromTo('.six', { opacity: 0 }, { duration: .1, autoAlpha: 1 }, '-=2')
-    .from('.portrait', { duration: .5, scale: 3.5, opacity: 0, x: 25, y: -25, rotationZ: -45 }, '-=2')
+    .fromTo('.balloons img', { opacity: 0, y: '110vh' }, { duration: 4, opacity: 1, y: '-125vh', stagger: .14, ease: 'power1.inOut' })
+    .fromTo('.six', { opacity: 0, y: 24, scale: .96 }, { duration: 1.15, autoAlpha: 1, y: 0, scale: 1, ease: 'power2.out' }, '-=3')
+    .from('.portrait', { duration: 1.1, scale: 1.18, opacity: 0, y: 24, rotationZ: -3, ease: 'power2.out' }, '<')
     .from('.hat', { duration: .55, x: -120, y: 280, rotation: -180, opacity: 0 })
     .from('.wish h2 span', { duration: .75, opacity: 0, y: -50, rotation: 150, skewX: '30deg', ease: 'elastic.out(1, .5)', stagger: .1 })
     .fromTo('.wish h2 span', { scale: 1.35, rotationY: 150 }, { duration: .7, scale: 1, rotationY: 0, color: '#f06f98', ease: 'expo.out', stagger: .1 }, 'party')
@@ -215,7 +215,7 @@ function stopFireworks() {
 }
 
 startButton.addEventListener('click', async () => {
-  await document.fonts.load('16px "LXGW WenKai"')
+  await document.fonts.load('16px "Ma Shan Zheng"')
   startSign.style.display = 'none'
   container.setAttribute('aria-hidden', 'false')
   await playMusic()
