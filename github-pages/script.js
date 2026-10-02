@@ -8,10 +8,10 @@ const openCardButton = document.getElementById('open-card')
 const replayButton = document.getElementById('replay')
 
 let timeline = null
-let audioContext = null
-let masterGain = null
-let musicTimer = null
-let musicStep = 0
+const backgroundMusic = new Audio('./music/bgMusic.mp3')
+backgroundMusic.preload = 'auto'
+backgroundMusic.loop = true
+backgroundMusic.volume = .82
 let fireworksFrame = null
 let fireworksRunning = false
 
@@ -98,66 +98,23 @@ function buildTimeline() {
   return timeline
 }
 
-function scheduleNote(frequency, start, duration, volume, type = 'sine') {
-  const oscillator = audioContext.createOscillator()
-  const gain = audioContext.createGain()
-  const filter = audioContext.createBiquadFilter()
-  oscillator.type = type
-  oscillator.frequency.setValueAtTime(frequency, start)
-  filter.type = 'lowpass'
-  filter.frequency.value = 1600
-  gain.gain.setValueAtTime(.0001, start)
-  gain.gain.exponentialRampToValueAtTime(volume, start + .08)
-  gain.gain.exponentialRampToValueAtTime(.0001, start + duration)
-  oscillator.connect(filter).connect(gain).connect(masterGain)
-  oscillator.start(start)
-  oscillator.stop(start + duration + .05)
-}
-
-function musicTick() {
-  if (!audioContext || audioContext.state !== 'running') return
-  const chords = [
-    [261.63, 329.63, 392, 493.88], [220, 261.63, 329.63, 392],
-    [174.61, 261.63, 349.23, 440], [196, 293.66, 392, 523.25]
-  ]
-  const chord = chords[Math.floor(musicStep / 8) % chords.length]
-  const note = chord[musicStep % chord.length]
-  const now = audioContext.currentTime + .03
-  scheduleNote(note, now, 1.35, .027)
-  scheduleNote(note * 2, now + .02, .65, .009, 'triangle')
-  if (musicStep % 8 === 0) scheduleNote(chord[0] / 2, now, 5.5, .018)
-  musicStep += 1
-}
-
 async function playMusic() {
-  if (!audioContext) {
-    audioContext = new (window.AudioContext || window.webkitAudioContext)()
-    masterGain = audioContext.createGain()
-    const delay = audioContext.createDelay(2)
-    const feedback = audioContext.createGain()
-    delay.delayTime.value = .34
-    feedback.gain.value = .17
-    masterGain.gain.value = .82
-    masterGain.connect(audioContext.destination)
-    masterGain.connect(delay)
-    delay.connect(feedback).connect(delay)
-    delay.connect(audioContext.destination)
-  }
-  await audioContext.resume()
+  await backgroundMusic.play()
   musicButton.classList.add('is-playing')
   musicButton.setAttribute('aria-label', '暂停音乐')
-  if (!musicTimer) {
-    musicTick()
-    musicTimer = window.setInterval(musicTick, 720)
-  }
 }
 
 async function toggleMusic() {
-  if (!audioContext || audioContext.state === 'suspended') return playMusic()
-  await audioContext.suspend()
+  if (backgroundMusic.paused) return playMusic()
+  backgroundMusic.pause()
   musicButton.classList.remove('is-playing')
   musicButton.setAttribute('aria-label', '播放音乐')
 }
+
+backgroundMusic.addEventListener('error', () => {
+  musicButton.classList.remove('is-playing')
+  musicButton.setAttribute('aria-label', '音乐加载失败')
+})
 
 function startFireworks() {
   if (fireworksRunning) return
