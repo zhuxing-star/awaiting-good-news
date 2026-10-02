@@ -215,7 +215,7 @@ function stopFireworks() {
 }
 
 startButton.addEventListener('click', async () => {
-  await document.fonts.load('16px "Ma Shan Zheng"')
+  await document.fonts.load('16px "LXGW WenKai"')
   startSign.style.display = 'none'
   container.setAttribute('aria-hidden', 'false')
   await playMusic()
@@ -225,7 +225,7 @@ startButton.addEventListener('click', async () => {
 unlockForm.addEventListener('submit', event => {
   event.preventDefault()
   if (unlockPassword.value !== '0919') {
-    passwordError.textContent = '好像还差一点，再想想看。'
+    passwordError.textContent = '密码提示：你的农历生日（四位数字）'
     unlockPassword.select()
     gsap.fromTo('.password-box', { x: -8 }, { x: 8, duration: .08, repeat: 5, yoyo: true, clearProps: 'transform' })
     return

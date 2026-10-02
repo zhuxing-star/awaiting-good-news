@@ -12,6 +12,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 GSAP is distributed under the GreenSock standard no-charge license. See <https://gsap.com/standard-license/>.
 
-Ma Shan Zheng is distributed under the SIL Open Font License 1.1. A copy is included at `github-pages/fonts/OFL.txt`.
+The page uses the LXGW WenKai font supplied by the referenced HappyBirthday repository. The deployed copy is subset to the characters used by this page for consistent mobile loading.
 
 The background music is reused from the referenced HappyBirthday repository as requested.
