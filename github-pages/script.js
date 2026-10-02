@@ -19,7 +19,6 @@ backgroundMusic.volume = .82
 let fireworksFrame = null
 let fireworksRunning = false
 const unlockDate = new Date(2026, 9, 28, 0, 0, 0)
-const unlockStorageKey = 'birthday-gift-unlocked'
 
 function enterGift() {
   lockScreen.hidden = true
@@ -48,9 +47,7 @@ function updateCountdown() {
 }
 
 function initializeLock() {
-  let previouslyUnlocked = false
-  try { previouslyUnlocked = localStorage.getItem(unlockStorageKey) === 'true' } catch {}
-  if (Date.now() >= unlockDate.getTime() || previouslyUnlocked) {
+  if (Date.now() >= unlockDate.getTime()) {
     enterGift()
     return
   }
@@ -228,7 +225,6 @@ unlockForm.addEventListener('submit', event => {
     gsap.fromTo('.password-box', { x: -8 }, { x: 8, duration: .08, repeat: 5, yoyo: true, clearProps: 'transform' })
     return
   }
-  try { localStorage.setItem(unlockStorageKey, 'true') } catch {}
   passwordError.textContent = ''
   gsap.to(lockScreen, { duration: .65, autoAlpha: 0, y: -18, onComplete: enterGift })
 })
