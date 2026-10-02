@@ -7,15 +7,53 @@
   <meta name="description" content="送给朱佳音的一份生日祝福">
   <title>朱佳音，生日快乐</title>
   <link rel="preload" href="./images/birthday-star.jpg" as="image">
-  <link rel="preload" href="./fonts/MaShanZheng-Regular.ttf" as="font" type="font/ttf" crossorigin>
-  <link rel="stylesheet" href="./style.css?v=20261002-6">
+  <link rel="preload" href="./fonts/LXGWWenKai-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="./style.css?v=20261002-7">
 </head>
 <body>
-  <button class="music-button" id="music-button" type="button" aria-label="播放音乐"><span></span></button>
+  <section class="lock-screen" id="lock-screen" aria-label="生日礼物倒计时">
+    <div class="lock-dots lock-dots--top" aria-hidden="true"><i></i><i></i><i></i></div>
+    <p class="lock-for">FOR · 朱佳音</p>
+    <svg class="lock-arrow" viewBox="0 0 105 58" aria-hidden="true">
+      <path d="M5 51 C24 21 59 40 93 9"></path>
+      <path d="M80 12 L94 7 L91 22"></path>
+    </svg>
+    <div class="gift-lock" aria-hidden="true">
+      <span class="gift-bow gift-bow--left"></span><span class="gift-bow gift-bow--right"></span>
+      <span class="gift-lid"></span><span class="gift-box"></span><span class="gift-ribbon"></span>
+      <span class="gift-padlock"><i></i></span>
+    </div>
+    <h1>一份还没到时间的礼物</h1>
+    <p class="lock-note">佳音，等到农历九月十九，<br>它会自己打开。</p>
+    <p class="countdown-label">距离礼物开启还有</p>
+    <div class="countdown" id="countdown" aria-live="polite">
+      <span><strong id="days">--</strong><small>天</small></span><b>:</b>
+      <span><strong id="hours">--</strong><small>时</small></span><b>:</b>
+      <span><strong id="minutes">--</strong><small>分</small></span><b>:</b>
+      <span><strong id="seconds">--</strong><small>秒</small></span>
+    </div>
+    <form class="unlock-form" id="unlock-form">
+      <p>如果你已经猜到了，也可以提前打开</p>
+      <label class="password-box">
+        <span class="sr-only">输入四位密码</span>
+        <input id="unlock-password" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="••••">
+      </label>
+      <p class="password-hint">密码提示：你的<strong>农历生日</strong>（四位数字）</p>
+      <p class="password-error" id="password-error" aria-live="polite"></p>
+      <button type="submit">提前打开礼物</button>
+    </form>
+    <p class="lock-signature">逐星 · 提前藏好的一份祝福</p>
+    <div class="lock-dots lock-dots--bottom" aria-hidden="true"><i></i><i></i></div>
+  </section>
 
-  <section class="start-sign" id="start-sign">
+  <button class="music-button" id="music-button" type="button" aria-label="播放音乐" hidden><span></span></button>
+
+  <section class="start-sign" id="start-sign" hidden>
     <p>温馨提醒：打开声音，效果会更完整哦 😊</p>
-    <span class="music-arrow" aria-hidden="true">↗</span>
+    <svg class="music-arrow" viewBox="0 0 105 58" aria-hidden="true">
+      <path d="M5 51 C24 21 59 40 93 9"></path>
+      <path d="M80 12 L94 7 L91 22"></path>
+    </svg>
     <button id="start-button" type="button">准备好了，我们开始吧！</button>
   </section>
 
@@ -37,6 +75,7 @@
     <section class="five layer">
       <p class="idea idea-1">这个祝福好像没有什么新意。</p>
       <p class="idea idea-2">我想给你一个<strong>不一样</strong>的生日祝福。</p>
+      <p class="idea idea-5"><span>你值得一个特别一点的生日</span> <span class="smiley">:)</span></p>
       <p class="idea idea-3 idea-3--big"><span>所</span><span>以</span></p>
       <p class="idea idea-4">我决定把沿途的风景分享给你。</p>
     </section>
@@ -67,6 +106,17 @@
       <img src="./images/template/balloon2.svg" alt=""><img src="./images/template/balloon3.svg" alt="">
       <img src="./images/template/balloon1.svg" alt=""><img src="./images/template/balloon2.svg" alt="">
       <img src="./images/template/balloon3.svg" alt=""><img src="./images/template/balloon1.svg" alt="">
+      <img src="./images/template/balloon2.svg" alt=""><img src="./images/template/balloon1.svg" alt="">
+      <img src="./images/template/balloon3.svg" alt=""><img src="./images/template/balloon2.svg" alt="">
+      <img src="./images/template/balloon3.svg" alt=""><img src="./images/template/balloon1.svg" alt="">
+      <img src="./images/template/balloon2.svg" alt=""><img src="./images/template/balloon1.svg" alt="">
+      <img src="./images/template/balloon3.svg" alt=""><img src="./images/template/balloon3.svg" alt="">
+      <img src="./images/template/balloon1.svg" alt=""><img src="./images/template/balloon2.svg" alt="">
+      <img src="./images/template/balloon3.svg" alt=""><img src="./images/template/balloon2.svg" alt="">
+      <img src="./images/template/balloon1.svg" alt=""><img src="./images/template/balloon3.svg" alt="">
+      <img src="./images/template/balloon2.svg" alt=""><img src="./images/template/balloon3.svg" alt="">
+      <img src="./images/template/balloon1.svg" alt=""><img src="./images/template/balloon2.svg" alt="">
+      <img src="./images/template/balloon1.svg" alt="">
     </div>
 
     <div class="color-bursts layer" aria-hidden="true">
@@ -92,6 +142,6 @@
   </main>
 
   <script src="./vendor/gsap.min.js"></script>
-  <script src="./script.js?v=20261002-6"></script>
+  <script src="./script.js?v=20261002-7"></script>
 </body>
 </html>

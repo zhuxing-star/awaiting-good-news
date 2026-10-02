@@ -1,5 +1,9 @@
 /* Adapted from abandon888/HappyBirthday under the MIT License. */
 const { gsap } = window
+const lockScreen = document.getElementById('lock-screen')
+const unlockForm = document.getElementById('unlock-form')
+const unlockPassword = document.getElementById('unlock-password')
+const passwordError = document.getElementById('password-error')
 const startSign = document.getElementById('start-sign')
 const startButton = document.getElementById('start-button')
 const musicButton = document.getElementById('music-button')
@@ -14,6 +18,47 @@ backgroundMusic.loop = true
 backgroundMusic.volume = .82
 let fireworksFrame = null
 let fireworksRunning = false
+const unlockDate = new Date(2026, 9, 28, 0, 0, 0)
+const unlockStorageKey = 'birthday-gift-unlocked'
+
+function enterGift() {
+  lockScreen.hidden = true
+  startSign.hidden = false
+  musicButton.hidden = false
+}
+
+function updateCountdown() {
+  const remaining = unlockDate.getTime() - Date.now()
+  if (remaining <= 0) {
+    enterGift()
+    return false
+  }
+
+  const totalSeconds = Math.floor(remaining / 1000)
+  const values = {
+    days: Math.floor(totalSeconds / 86400),
+    hours: Math.floor((totalSeconds % 86400) / 3600),
+    minutes: Math.floor((totalSeconds % 3600) / 60),
+    seconds: totalSeconds % 60
+  }
+  Object.entries(values).forEach(([id, value]) => {
+    document.getElementById(id).textContent = String(value).padStart(2, '0')
+  })
+  return true
+}
+
+function initializeLock() {
+  let previouslyUnlocked = false
+  try { previouslyUnlocked = localStorage.getItem(unlockStorageKey) === 'true' } catch {}
+  if (Date.now() >= unlockDate.getTime() || previouslyUnlocked) {
+    enterGift()
+    return
+  }
+  updateCountdown()
+  const timer = window.setInterval(() => {
+    if (!updateCountdown()) window.clearInterval(timer)
+  }, 1000)
+}
 
 function splitText(element) {
   if (!element || element.dataset.split === 'true') return
@@ -62,6 +107,9 @@ function buildTimeline() {
     .fromTo('.idea-2', ideaIn, { duration: .7, autoAlpha: 1, y: 0, rotationX: 0, skewX: 0 })
     .from('.idea-2 strong', { duration: .5, scale: .2, rotation: -8 }, '-=.2')
     .to('.idea-2', { duration: .7, ...ideaOut }, '+=1.65')
+    .fromTo('.idea-5', { rotationX: 15, rotationZ: -10, skewY: '-5deg', y: 50, opacity: 0 }, { duration: .7, autoAlpha: 1, rotationX: 0, rotationZ: 0, skewY: 0, y: 0 })
+    .to('.idea-5 .smiley', { duration: .7, rotation: 90, x: 8 }, '+=.4')
+    .to('.idea-5', { duration: .7, scale: .2, autoAlpha: 0 }, '+=2')
     .fromTo('.idea-3', { opacity: 0 }, { duration: .1, autoAlpha: 1 })
     .from('.idea-3 span', { duration: .85, scale: 3, opacity: 0, rotation: 15, ease: 'expo.out', stagger: .2 })
     .to('.idea-3 span', { duration: .8, scale: 3, opacity: 0, rotation: -15, ease: 'expo.in', stagger: .2 }, '+=.9')
@@ -79,15 +127,15 @@ function buildTimeline() {
 
   timeline
     .to('.memories', { duration: .1, autoAlpha: 0 })
-    .fromTo('.balloons img', { opacity: .9, y: 0 }, { duration: 3.2, opacity: 1, y: '-125vh', stagger: .18, ease: 'none' })
-    .fromTo('.six', { opacity: 0 }, { duration: .1, autoAlpha: 1 }, '-=2.7')
-    .from('.portrait', { duration: .65, scale: 3.3, opacity: 0, x: 25, y: -25, rotationZ: -35 }, '-=2.6')
+    .fromTo('.balloons img', { opacity: .9, y: 1400 }, { duration: 2.5, opacity: 1, y: -1000, stagger: .2 })
+    .fromTo('.six', { opacity: 0 }, { duration: .1, autoAlpha: 1 }, '-=2')
+    .from('.portrait', { duration: .5, scale: 3.5, opacity: 0, x: 25, y: -25, rotationZ: -45 }, '-=2')
     .from('.hat', { duration: .55, x: -120, y: 280, rotation: -180, opacity: 0 })
     .from('.wish h2 span', { duration: .75, opacity: 0, y: -50, rotation: 150, skewX: '30deg', ease: 'elastic.out(1, .5)', stagger: .1 })
     .fromTo('.wish h2 span', { scale: 1.35, rotationY: 150 }, { duration: .7, scale: 1, rotationY: 0, color: '#f06f98', ease: 'expo.out', stagger: .1 }, 'party')
     .from('.wish p', { duration: .55, opacity: 0, y: 12, skewX: '-12deg' }, 'party')
     .call(startFireworks, [], 'party')
-    .to('.color-bursts i', { duration: 1.45, visibility: 'visible', opacity: 0, scale: 70, repeat: 2, repeatDelay: 1.2, stagger: .25 })
+    .to('.color-bursts i', { duration: 1.5, visibility: 'visible', opacity: 0, scale: 80, repeat: 1, repeatDelay: 1.1, stagger: .3 })
     .to('.six', { duration: .55, autoAlpha: 0, y: 30 })
     .fromTo('.nine', { opacity: 0, y: -20, skewX: '12deg' }, { duration: 1, autoAlpha: 1, y: 0, skewX: 0 })
     .fromTo('#open-card', { autoAlpha: 0, scale: .8 }, { duration: .55, autoAlpha: 1, scale: 1, clearProps: 'transform' }, '+=.3')
@@ -167,11 +215,24 @@ function stopFireworks() {
 }
 
 startButton.addEventListener('click', async () => {
-  await document.fonts.load('16px "Ma Shan Zheng"')
+  await document.fonts.load('16px "LXGW WenKai"')
   startSign.style.display = 'none'
   container.setAttribute('aria-hidden', 'false')
   await playMusic()
   buildTimeline().play(0)
+})
+
+unlockForm.addEventListener('submit', event => {
+  event.preventDefault()
+  if (unlockPassword.value !== '0919') {
+    passwordError.textContent = '好像还差一点，再想想看。'
+    unlockPassword.select()
+    gsap.fromTo('.password-box', { x: -8 }, { x: 8, duration: .08, repeat: 5, yoyo: true, clearProps: 'transform' })
+    return
+  }
+  try { localStorage.setItem(unlockStorageKey, 'true') } catch {}
+  passwordError.textContent = ''
+  gsap.to(lockScreen, { duration: .65, autoAlpha: 0, y: -18, onComplete: enterGift })
 })
 
 musicButton.addEventListener('click', toggleMusic)
@@ -190,3 +251,4 @@ replayButton.addEventListener('click', () => {
 
 document.addEventListener('touchmove', event => event.preventDefault(), { passive: false })
 window.addEventListener('resize', () => { if (fireworksRunning) { stopFireworks(); startFireworks() } })
+initializeLock()

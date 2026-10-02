@@ -1,6 +1,6 @@
 @font-face {
-  font-family: "Ma Shan Zheng";
-  src: url("./fonts/MaShanZheng-Regular.ttf") format("truetype");
+  font-family: "LXGW WenKai";
+  src: url("./fonts/LXGWWenKai-Regular.ttf") format("truetype");
   font-style: normal;
   font-weight: 400;
   font-display: block;
@@ -14,14 +14,69 @@
   --blue: #42a7d8;
 }
 
-* { box-sizing: border-box; }
+* { box-sizing: border-box; font-family: inherit; }
 html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; overscroll-behavior: none; }
 body {
   color: var(--ink); background: var(--paper);
-  font-family: "Ma Shan Zheng", cursive;
+  font-family: "LXGW WenKai", sans-serif;
   -webkit-font-smoothing: antialiased; user-select: none;
 }
 button { font: inherit; }
+[hidden] { display: none !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+.lock-screen {
+  position: fixed; inset: 0; z-index: 200; display: flex; flex-direction: column; align-items: center;
+  padding: max(26px, env(safe-area-inset-top)) 25px max(22px, env(safe-area-inset-bottom));
+  overflow: hidden; text-align: center; background: var(--paper);
+}
+.lock-screen::before {
+  content: ""; position: absolute; inset: 0; opacity: .04; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.lock-for { align-self: flex-start; margin: 0; color: #8b8175; font-size: 12px; letter-spacing: .16em; }
+.lock-arrow, .music-arrow { fill: none; stroke: var(--pink); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.lock-arrow path, .music-arrow path { stroke-dasharray: 3 7; }
+.lock-arrow path:last-child, .music-arrow path:last-child { stroke-dasharray: none; }
+.lock-arrow { position: absolute; top: max(62px, calc(env(safe-area-inset-top) + 48px)); right: 18px; width: 105px; height: 58px; transform: rotate(-4deg); }
+.lock-dots { position: absolute; }
+.lock-dots i { display: inline-block; border-radius: 50%; }
+.lock-dots--top { top: max(28px, env(safe-area-inset-top)); right: 24px; }
+.lock-dots--top i { width: 8px; height: 8px; margin-left: 6px; background: #f08bad; }
+.lock-dots--top i:nth-child(2) { background: #68bddd; transform: translateY(5px); }
+.lock-dots--top i:nth-child(3) { background: #7ec67d; transform: translateY(-2px); }
+.lock-dots--bottom { right: 30px; bottom: 20%; }
+.lock-dots--bottom i:first-child { width: 8px; height: 8px; background: #7ac47d; }
+.lock-dots--bottom i:last-child { width: 5px; height: 5px; margin-left: 12px; background: #e9bd56; transform: translateY(16px); }
+.gift-lock { position: relative; flex: 0 0 auto; width: 112px; height: 104px; margin-top: clamp(34px, 8vh, 78px); }
+.gift-box { position: absolute; left: 12px; bottom: 0; width: 88px; height: 62px; border: 2px solid #333; border-radius: 3px; background: white; }
+.gift-ribbon { position: absolute; left: 55px; bottom: 1px; width: 2px; height: 60px; background: #333; }
+.gift-lid { position: absolute; left: 5px; bottom: 59px; width: 102px; height: 19px; border: 2px solid #333; border-radius: 3px; background: var(--paper); }
+.gift-bow { position: absolute; top: 6px; width: 28px; height: 22px; border: 2px solid #333; border-radius: 60% 50%; background: var(--paper); }
+.gift-bow--left { left: 31px; transform: rotate(22deg); }
+.gift-bow--right { right: 31px; transform: rotate(-22deg); }
+.gift-padlock { position: absolute; z-index: 2; left: 42px; bottom: 21px; width: 29px; height: 27px; border-radius: 5px; background: #ef89aa; box-shadow: 0 4px 0 rgba(193,88,123,.15); }
+.gift-padlock::before { content: ""; position: absolute; left: 7px; top: -15px; width: 15px; height: 19px; border: 3px solid #ef89aa; border-bottom: 0; border-radius: 12px 12px 0 0; }
+.gift-padlock i { position: absolute; left: 13px; top: 9px; width: 4px; height: 9px; border-radius: 4px; background: white; }
+.lock-screen h1 { margin: 23px 0 8px; font-size: clamp(29px, 8vw, 34px); font-weight: 400; letter-spacing: .06em; }
+.lock-note { margin: 0; color: #777066; font-size: 16px; line-height: 1.7; letter-spacing: .04em; }
+.countdown-label { margin: 24px 0 10px; color: #a59a8e; font-size: 12px; letter-spacing: .16em; }
+.countdown { display: flex; align-items: flex-start; justify-content: center; gap: 9px; }
+.countdown span { min-width: 48px; }
+.countdown strong { display: block; font-size: 31px; font-weight: 400; line-height: 1; font-variant-numeric: tabular-nums; }
+.countdown small { display: block; margin-top: 6px; color: #a0968a; font-size: 11px; }
+.countdown b { margin-top: 2px; color: #d77b99; font-size: 25px; font-weight: 400; }
+.unlock-form { width: 100%; margin-top: 22px; }
+.unlock-form > p:first-child { margin: 0 0 12px; color: #6f695f; font-size: 14px; }
+.password-box { display: block; margin: 0 auto; width: min(226px, 75vw); }
+.password-box input { width: 100%; height: 49px; padding: 0 18px; border: 1px solid #cfc8bd; border-radius: 5px; outline: none; color: #554f47; background: white; text-align: center; font: 21px/1 "LXGW WenKai", sans-serif; letter-spacing: 1.55em; text-indent: 1.55em; box-shadow: 0 5px 14px rgba(93,76,54,.05); }
+.password-box input:focus { border-color: var(--pink); box-shadow: 0 0 0 3px rgba(240,111,152,.1); }
+.password-box input::placeholder { color: #bbb1a5; opacity: 1; }
+.password-hint { margin: 10px 0 0; color: #a49a8e; font-size: 12px; letter-spacing: .03em; }
+.password-hint strong { color: #de7595; font-weight: 400; }
+.password-error { min-height: 19px; margin: 3px 0 3px; color: #cf587c; font-size: 12px; }
+.unlock-form button { width: min(226px, 75vw); height: 48px; border: 1px solid #5bb184; border-radius: 6px; color: #2e6750; background: white; font-size: 16px; letter-spacing: .12em; box-shadow: 0 7px 18px rgba(66,137,100,.08); }
+.lock-signature { position: absolute; bottom: max(20px, env(safe-area-inset-bottom)); margin: 0; color: #b0a79b; font-size: 11px; letter-spacing: .13em; }
 
 .music-button {
   position: fixed; z-index: 100; top: max(22px, env(safe-area-inset-top)); right: max(22px, env(safe-area-inset-right));
@@ -40,7 +95,7 @@ button { font: inherit; }
 .start-sign p { margin: 0 0 32px; color: #555; font-size: 16px; letter-spacing: .03em; }
 .music-arrow {
   position: fixed; top: max(66px, calc(env(safe-area-inset-top) + 44px)); right: max(48px, calc(env(safe-area-inset-right) + 48px));
-  color: var(--pink); font-size: 34px; line-height: 1; transform: rotate(-5deg); animation: pointMusic 1.15s ease-in-out infinite alternate;
+  width: 105px; height: 58px; transform: rotate(-5deg); animation: pointMusic 1.15s ease-in-out infinite alternate;
 }
 .start-sign button, .nine button, .card > button {
   padding: 15px 26px; border: 1px solid var(--green); border-radius: 6px; color: #333; background: transparent;
@@ -68,6 +123,9 @@ button { font: inherit; }
 .five { position: absolute; }
 .idea { position: absolute; left: 20px; right: 20px; margin: 0; font-size: clamp(26px, 6vw, 45px); line-height: 1.55; }
 .idea-2 strong { display: inline-block; margin: 0 5px; padding: 1px 8px 3px; border-radius: 4px; color: white; background: var(--blue); font-weight: 400; }
+.idea-5 { font-size: clamp(34px, 8vw, 60px); }
+.idea-5 span { display: inline-block; }
+.idea-5 .smiley { white-space: nowrap; transform-origin: center; }
 .idea-3--big { display: flex; justify-content: center; gap: 18px; }
 .idea-3--big span { display: inline-block; font-size: clamp(120px, 34vw, 230px); }
 
@@ -100,19 +158,10 @@ button { font: inherit; }
 .wish p { margin: 9px 0 0; font-size: clamp(15px, 3vw, 20px); font-weight: 300; letter-spacing: .08em; }
 
 .balloons { z-index: 1; }
-.balloons img { position: absolute; width: 120px; bottom: -210px; }
-.balloons img:nth-child(1) { left: 5%; }
-.balloons img:nth-child(2) { left: 20%; width: 90px; }
-.balloons img:nth-child(3) { left: 36%; width: 105px; }
-.balloons img:nth-child(4) { left: 54%; width: 95px; }
-.balloons img:nth-child(5) { left: 72%; width: 110px; }
-.balloons img:nth-child(6) { left: 88%; width: 90px; }
-.balloons img:nth-child(7) { left: -7%; width: 80px; }
-.balloons img:nth-child(8) { left: 28%; width: 76px; }
-.balloons img:nth-child(9) { left: 61%; width: 83px; }
-.balloons img:nth-child(10) { left: 83%; width: 72px; }
-.balloons img:nth-child(11) { left: 46%; width: 74px; }
-.balloons img:nth-child(12) { left: 12%; width: 70px; }
+.balloons img { position: absolute; display: inline-block; width: clamp(76px, 27vw, 145px); }
+.balloons img:nth-child(even) { left: -10%; }
+.balloons img:nth-child(odd) { right: -10%; }
+.balloons img:nth-child(3n) { left: 30%; right: auto; }
 
 .color-bursts { z-index: -1; }
 .color-bursts i { position: absolute; width: 24px; height: 24px; border-radius: 50%; visibility: hidden; }
@@ -139,7 +188,7 @@ button { font: inherit; }
 .card article::before, .card article::after { content: ""; position: absolute; width: 18px; height: 18px; border-radius: 50%; }
 .card article::before { right: 26px; top: 25px; background: #f29abb; box-shadow: 25px 11px 0 #6fc4e6; }
 .card article::after { left: 24px; bottom: 24px; background: #87cc7e; box-shadow: 23px -8px 0 #f0c45e; }
-.card-date { color: #999; font: 11px/1 ui-monospace, monospace; letter-spacing: .22em; }
+.card-date { color: #999; font-size: 12px; line-height: 1; letter-spacing: .22em; }
 .card h2 { margin: 32px 0; font-size: clamp(26px, 6vw, 36px); font-weight: 400; }
 .card-copy { min-height: 250px; color: #aaa; font-size: clamp(16px, 3.8vw, 19px); line-height: 2; letter-spacing: .09em; }
 .signature { margin: 24px 0 0; text-align: right; font-size: 20px; letter-spacing: .14em; }
@@ -162,6 +211,11 @@ button { font: inherit; }
 }
 
 @media (max-height: 700px) {
+  .gift-lock { margin-top: 20px; transform: scale(.82); margin-bottom: -12px; }
+  .lock-screen h1 { margin-top: 12px; }
+  .countdown-label { margin-top: 12px; }
+  .unlock-form { margin-top: 12px; }
+  .lock-signature { display: none; }
   .portrait-wrap { height: 46svh; }
   .wish h2 { font-size: 38px; }
   .card article { min-height: 75svh; padding-top: 36px; }
