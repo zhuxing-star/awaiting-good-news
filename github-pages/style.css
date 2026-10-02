@@ -1,6 +1,6 @@
 @font-face {
   font-family: "Ma Shan Zheng";
-  src: url("./fonts/MaShanZheng-Regular.ttf?v=20261002-15") format("truetype");
+  src: url("./fonts/MaShanZheng-Regular.ttf?v=20261002-17") format("truetype");
   font-style: normal;
   font-weight: 400;
   font-display: block;
@@ -23,6 +23,7 @@ body {
 }
 html, body, body *, body *::before, body *::after { font-family: "Ma Shan Zheng", cursive !important; }
 button { font: inherit; }
+button:disabled { cursor: wait; opacity: .55; }
 [hidden] { display: none !important; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 

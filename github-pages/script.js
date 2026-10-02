@@ -12,41 +12,113 @@ const openCardButton = document.getElementById('open-card')
 const replayButton = document.getElementById('replay')
 const memoryImages = [...document.querySelectorAll('.memory img')]
 const portraitImage = document.querySelector('.portrait')
+const storyImages = [...memoryImages, portraitImage]
+const startButtonLabel = startButton.textContent
 
 let timeline = null
 const backgroundMusic = new Audio()
 backgroundMusic.preload = 'none'
 backgroundMusic.loop = true
 backgroundMusic.volume = .82
+let musicReadyPromise = null
+const imageLoadPromises = new WeakMap()
 let fireworksFrame = null
 let fireworksRunning = false
 const unlockDate = new Date(2026, 9, 28, 0, 0, 0)
 
+function loadImageAttempt(image, attempt = 0) {
+  return new Promise((resolve, reject) => {
+    const source = image.dataset.src
+    const separator = source.includes('?') ? '&' : '?'
+    const url = attempt ? `${source}${separator}retry=${attempt}` : source
+    const handleLoad = async () => {
+      image.removeEventListener('error', handleError)
+      try { await image.decode?.() } catch { /* The decoded image can still render. */ }
+      resolve(image)
+    }
+    const handleError = () => {
+      image.removeEventListener('load', handleLoad)
+      if (attempt >= 2) { reject(new Error(`Image failed to load: ${source}`)); return }
+      window.setTimeout(() => loadImageAttempt(image, attempt + 1).then(resolve, reject), 450 * (attempt + 1))
+    }
+    image.addEventListener('load', handleLoad, { once: true })
+    image.addEventListener('error', handleError, { once: true })
+    image.src = url
+  })
+}
+
 function loadImage(image) {
-  if (!image || image.src || !image.dataset.src) return
-  image.src = image.dataset.src
+  if (!image) return Promise.resolve()
+  if (image.complete && image.naturalWidth > 0) return Promise.resolve(image)
+  if (!image.dataset.src) return Promise.reject(new Error('Image source is missing'))
+  if (!imageLoadPromises.has(image)) {
+    const promise = loadImageAttempt(image).catch(error => {
+      imageLoadPromises.delete(image)
+      throw error
+    })
+    imageLoadPromises.set(image, promise)
+  }
+  return imageLoadPromises.get(image)
+}
+
+async function fetchMusic(attempt = 0) {
+  try {
+    const response = await fetch('./music/bgMusic.m4a?v=20261002-17', { cache: 'force-cache' })
+    if (!response.ok) throw new Error(`Music request failed: ${response.status}`)
+    return await response.blob()
+  } catch (error) {
+    if (attempt >= 2) throw error
+    await new Promise(resolve => window.setTimeout(resolve, 700 * (attempt + 1)))
+    return fetchMusic(attempt + 1)
+  }
 }
 
 function prepareMusic() {
-  if (backgroundMusic.src) return
-  backgroundMusic.src = './music/bgMusic.m4a'
-  backgroundMusic.preload = 'auto'
-  backgroundMusic.load()
+  if (musicReadyPromise) return musicReadyPromise
+  musicReadyPromise = fetchMusic()
+    .then(blob => new Promise((resolve, reject) => {
+      backgroundMusic.src = URL.createObjectURL(blob)
+      backgroundMusic.preload = 'auto'
+      backgroundMusic.addEventListener('canplay', resolve, { once: true })
+      backgroundMusic.addEventListener('error', reject, { once: true })
+      backgroundMusic.load()
+    }))
+    .catch(error => {
+      musicReadyPromise = null
+      throw error
+    })
+  return musicReadyPromise
 }
 
 function preloadStoryAssets() {
-  memoryImages.forEach((image, index) => {
-    window.setTimeout(() => loadImage(image), index * 90)
-  })
-  window.setTimeout(() => loadImage(portraitImage), 450)
+  return Promise.allSettled(storyImages.map(loadImage))
+}
+
+function prepareExperience() {
+  startButton.disabled = true
+  startButton.textContent = '正在准备音乐…'
+  musicButton.disabled = true
+  musicButton.setAttribute('aria-label', '音乐加载中')
+  preloadStoryAssets()
+  prepareMusic()
+    .then(() => {
+      startButton.disabled = false
+      startButton.textContent = startButtonLabel
+      musicButton.disabled = false
+      musicButton.setAttribute('aria-label', '播放音乐')
+    })
+    .catch(() => {
+      startButton.disabled = false
+      startButton.textContent = startButtonLabel
+      musicButton.setAttribute('aria-label', '音乐加载失败')
+    })
 }
 
 function enterGift() {
   lockScreen.hidden = true
   startSign.hidden = false
   musicButton.hidden = false
-  prepareMusic()
-  loadImage(memoryImages[0])
+  prepareExperience()
 }
 
 function updateCountdown() {
@@ -139,6 +211,12 @@ function buildTimeline() {
   memories.forEach((memory, index) => {
     const direction = index % 2 === 0 ? -8 : 8
     timeline
+      .call(() => {
+        const image = memory.querySelector('img')
+        if (image.complete && image.naturalWidth > 0) return
+        timeline.pause()
+        loadImage(image).then(() => timeline.play(), () => timeline.play())
+      })
       .fromTo(memory, { autoAlpha: 0, scale: 1.65, rotation: direction }, { duration: .6, autoAlpha: 1, scale: 1, rotation: direction / 4, ease: 'power3.out' })
       .to(memory, { duration: .42, autoAlpha: 0, scale: .86, rotation: -direction / 2 }, '+=1.1')
   })
@@ -162,7 +240,6 @@ function buildTimeline() {
 }
 
 async function playMusic() {
-  prepareMusic()
   try {
     await backgroundMusic.play()
     musicButton.classList.add('is-playing')
@@ -238,12 +315,12 @@ function stopFireworks() {
   canvas.getContext('2d')?.clearRect(0, 0, canvas.width, canvas.height)
 }
 
-startButton.addEventListener('click', async () => {
-  await document.fonts.load('16px "Ma Shan Zheng"')
+startButton.addEventListener('click', () => {
+  playMusic()
+  document.fonts.load('16px "Ma Shan Zheng"')
   preloadStoryAssets()
   startSign.style.display = 'none'
   container.setAttribute('aria-hidden', 'false')
-  playMusic()
   buildTimeline().play(0)
 })
 
@@ -275,4 +352,8 @@ replayButton.addEventListener('click', () => {
 
 document.addEventListener('touchmove', event => event.preventDefault(), { passive: false })
 window.addEventListener('resize', () => { if (fireworksRunning) { stopFireworks(); startFireworks() } })
+window.setTimeout(() => {
+  preloadStoryAssets()
+  prepareMusic().catch(() => {})
+}, 800)
 initializeLock()
