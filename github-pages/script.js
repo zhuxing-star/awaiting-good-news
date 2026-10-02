@@ -116,8 +116,8 @@ function buildTimeline() {
   memories.forEach((memory, index) => {
     const direction = index % 2 === 0 ? -8 : 8
     timeline
-      .fromTo(memory, { autoAlpha: 0, scale: 1.8, rotation: direction }, { duration: .85, autoAlpha: 1, scale: 1, rotation: direction / 4, ease: 'power3.out' })
-      .to(memory, { duration: .55, autoAlpha: 0, scale: .82, rotation: -direction / 2 }, '+=1.35')
+      .fromTo(memory, { autoAlpha: 0, scale: 1.65, rotation: direction }, { duration: .6, autoAlpha: 1, scale: 1, rotation: direction / 4, ease: 'power3.out' })
+      .to(memory, { duration: .42, autoAlpha: 0, scale: .86, rotation: -direction / 2 }, '+=1.1')
   })
 
   timeline

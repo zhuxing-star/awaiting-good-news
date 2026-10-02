@@ -1,6 +1,6 @@
 @font-face {
   font-family: "Ma Shan Zheng";
-  src: url("./fonts/MaShanZheng-Regular.ttf?v=20261002-11") format("truetype");
+  src: url("./fonts/MaShanZheng-Regular.ttf?v=20261002-13") format("truetype");
   font-style: normal;
   font-weight: 400;
   font-display: block;
@@ -127,22 +127,20 @@ button { font: inherit; }
 
 .memories { z-index: 2; display: grid; place-items: center; }
 .memory {
-  position: absolute; width: min(78vw, 660px); height: min(72vh, 700px); margin: 0; padding: 12px 12px 44px;
+  position: absolute; display: grid; grid-template-rows: minmax(0, 1fr) auto;
+  width: min(78vw, 580px); height: min(76vh, 740px); margin: 0; padding: 11px;
   background: white; box-shadow: 0 20px 55px rgba(0,0,0,.15); overflow: hidden;
 }
 .memory:nth-child(odd) { transform: rotate(-2deg); }
 .memory:nth-child(even) { transform: rotate(2deg); }
-.memory img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.memory-2, .memory-3, .memory-4 { width: min(86vw, 820px); height: min(62vh, 590px); }
-.memory-2 img { object-position: center; }
-.memory-3 img { object-position: center; }
-.memory-4 img { object-position: 48% center; }
-.memory-dots { position: absolute; bottom: max(35px, env(safe-area-inset-bottom)); display: flex; gap: 8px; }
-.memory-dots i { width: 8px; height: 8px; border-radius: 50%; background: #ddd; }
-.memory-dots i:nth-child(1) { background: #e76f91; }
-.memory-dots i:nth-child(2) { background: #6bc4e8; }
-.memory-dots i:nth-child(3) { background: #77c37b; }
-.memory-dots i:nth-child(4) { background: #e6b94f; }
+.memory--landscape { width: min(88vw, 850px); height: min(64vh, 620px); }
+.memory img { display: block; width: 100%; height: 100%; min-height: 0; object-fit: cover; }
+.memory figcaption {
+  min-height: 66px; padding: 12px 8px 4px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  color: #888078; text-align: left; font-size: clamp(15px, 3vw, 19px); letter-spacing: .05em; line-height: 1.45;
+}
+.memory figcaption span { flex: 1; border-bottom: 1px dashed #e3d7cc; padding-bottom: 5px; }
+.memory figcaption small { flex: none; color: #c8a7ae; font-size: 12px; letter-spacing: .12em; }
 
 .six { z-index: 3; justify-content: flex-start; padding-top: 8vh; }
 .portrait-wrap { position: relative; width: min(70vw, 420px); height: min(53vh, 530px); }
@@ -197,8 +195,10 @@ button { font: inherit; }
 
 @media (max-width: 520px) {
   .start-sign p { font-size: 14px; }
-  .memory { width: 80vw; height: 68svh; padding: 9px 9px 35px; }
-  .memory-2, .memory-3, .memory-4 { width: 88vw; height: 55svh; }
+  .memory { width: 82vw; height: 72svh; padding: 8px; }
+  .memory--landscape { width: 91vw; height: 57svh; }
+  .memory figcaption { min-height: 58px; padding: 9px 5px 2px; gap: 9px; font-size: 14px; }
+  .memory figcaption small { font-size: 10px; }
   .portrait-wrap { width: 72vw; height: 52svh; }
   .hat { width: 58px; top: -40px; left: 43%; }
   .wish { margin-top: 14px; }
