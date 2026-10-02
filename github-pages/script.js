@@ -22,8 +22,8 @@ const portraitImage = document.querySelector('.portrait')
 const storyImages = [...memoryImages, portraitImage]
 const startButtonLabel = startButton.textContent
 const assetSizes = new Map([
-  ['./music/bgMusic.m4a?v=20261002-18', 3338013],
-  ['./fonts/MaShanZheng-Regular.ttf?v=20261002-18', 214384],
+  ['./music/bgMusic.m4a?v=20261003-19', 3338013],
+  ['./fonts/MaShanZheng-Regular.ttf?v=20261003-19', 214384],
   ['./images/memories/leifeng.webp', 186398],
   ['./images/memories/west-lake.webp', 151434],
   ['./images/memories/sunset.webp', 44962],
@@ -127,15 +127,14 @@ function loadImage(image) {
 
 function prepareMusic() {
   if (musicReadyPromise) return musicReadyPromise
-  const source = './music/bgMusic.m4a?v=20261002-18'
+  const source = './music/bgMusic.m4a?v=20261003-19'
   musicReadyPromise = downloadAsset(source)
-    .then(blob => new Promise((resolve, reject) => {
+    .then(blob => {
       backgroundMusic.src = URL.createObjectURL(blob)
       backgroundMusic.preload = 'auto'
-      backgroundMusic.addEventListener('canplay', resolve, { once: true })
-      backgroundMusic.addEventListener('error', reject, { once: true })
       backgroundMusic.load()
-    }))
+      return backgroundMusic
+    })
     .catch(error => {
       musicReadyPromise = null
       throw error
@@ -165,7 +164,7 @@ function prepareExperience() {
 async function loadCriticalAssets() {
   loadingRetry.hidden = true
   try {
-    const fontUrl = './fonts/MaShanZheng-Regular.ttf?v=20261002-18'
+    const fontUrl = './fonts/MaShanZheng-Regular.ttf?v=20261003-19'
     await Promise.all([
       prepareMusic(),
       preloadStoryAssets(),
@@ -422,7 +421,11 @@ replayButton.addEventListener('click', () => {
 
 document.addEventListener('touchmove', event => event.preventDefault(), { passive: false })
 window.addEventListener('resize', () => { if (fireworksRunning) { stopFireworks(); startFireworks() } })
-loadingRetry.addEventListener('click', () => window.location.reload())
+loadingRetry.addEventListener('click', () => {
+  const retryUrl = new URL(window.location.href)
+  retryUrl.searchParams.set('reload', Date.now())
+  window.location.replace(retryUrl)
+})
 startButton.disabled = true
 musicButton.disabled = true
 musicButton.setAttribute('aria-label', '音乐加载中')
