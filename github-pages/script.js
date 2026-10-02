@@ -1,174 +1,237 @@
-const birthday = new Date('2026-10-28T00:00:00+08:00');
-const countdownNodes = {
-  days: document.querySelector('#days'), hours: document.querySelector('#hours'),
-  minutes: document.querySelector('#minutes'), seconds: document.querySelector('#seconds'),
-};
-const countdownCaption = document.querySelector('#countdown-caption');
-const openInvitation = document.querySelector('#open-invitation');
-const soundButton = document.querySelector('#sound');
-const soundText = soundButton.querySelector('.sound__text');
-const jellyButtons = [...document.querySelectorAll('.jelly')];
-const litCount = document.querySelector('#lit-count');
-const ritualStage = document.querySelector('#ritual-stage');
-const ritualComplete = document.querySelector('#ritual-complete');
-const revealGift = document.querySelector('#reveal-gift');
+/* Adapted from abandon888/HappyBirthday under the MIT License. */
+const { gsap } = window
+const startSign = document.getElementById('start-sign')
+const startButton = document.getElementById('start-button')
+const musicButton = document.getElementById('music-button')
+const container = document.getElementById('container')
+const openCardButton = document.getElementById('open-card')
+const replayButton = document.getElementById('replay')
 
-function updateCountdown() {
-  const remaining = birthday.getTime() - Date.now();
-  if (remaining <= 0) {
-    Object.values(countdownNodes).forEach((node) => { node.textContent = '00'; });
-    countdownCaption.textContent = '今天，祝朱佳音生日快乐';
-    return;
+let timeline = null
+let audioContext = null
+let masterGain = null
+let musicTimer = null
+let musicStep = 0
+let fireworksFrame = null
+let fireworksRunning = false
+
+function splitText(element) {
+  if (!element || element.dataset.split === 'true') return
+  const fragment = document.createDocumentFragment()
+  for (const character of element.textContent) {
+    const span = document.createElement('span')
+    span.textContent = character
+    fragment.appendChild(span)
   }
-  const day = 86400000;
-  const hour = 3600000;
-  const minute = 60000;
-  countdownNodes.days.textContent = String(Math.floor(remaining / day)).padStart(2, '0');
-  countdownNodes.hours.textContent = String(Math.floor((remaining % day) / hour)).padStart(2, '0');
-  countdownNodes.minutes.textContent = String(Math.floor((remaining % hour) / minute)).padStart(2, '0');
-  countdownNodes.seconds.textContent = String(Math.floor((remaining % minute) / 1000)).padStart(2, '0');
-}
-updateCountdown();
-setInterval(updateCountdown, 1000);
-
-let audioContext;
-let masterGain;
-let ambientTimer;
-let birthdayTimer;
-let musicMode = 'ambient';
-let isMusicOn = false;
-let ambientStep = 0;
-
-function setupAudio() {
-  if (audioContext) return;
-  const AudioEngine = window.AudioContext || window.webkitAudioContext;
-  if (!AudioEngine) return;
-  audioContext = new AudioEngine();
-  masterGain = audioContext.createGain();
-  const lowpass = audioContext.createBiquadFilter();
-  const delay = audioContext.createDelay(2);
-  const feedback = audioContext.createGain();
-  masterGain.gain.value = 0.0001;
-  lowpass.type = 'lowpass'; lowpass.frequency.value = 2600;
-  delay.delayTime.value = 0.34; feedback.gain.value = 0.2;
-  masterGain.connect(lowpass); lowpass.connect(audioContext.destination); lowpass.connect(delay);
-  delay.connect(feedback); feedback.connect(delay); delay.connect(audioContext.destination);
+  element.replaceChildren(fragment)
+  element.dataset.split = 'true'
 }
 
-function tone(frequency, start, duration, volume, type = 'sine') {
-  if (!audioContext || !masterGain) return;
-  const oscillator = audioContext.createOscillator();
-  const envelope = audioContext.createGain();
-  oscillator.type = type; oscillator.frequency.setValueAtTime(frequency, start);
-  envelope.gain.setValueAtTime(0.0001, start);
-  envelope.gain.exponentialRampToValueAtTime(volume, start + Math.min(0.08, duration * 0.2));
-  envelope.gain.exponentialRampToValueAtTime(0.0001, start + duration);
-  oscillator.connect(envelope); envelope.connect(masterGain);
-  oscillator.start(start); oscillator.stop(start + duration + 0.05);
+function prepareText() {
+  splitText(document.querySelector('.chat-text'))
+  splitText(document.querySelector('.wish h2'))
 }
 
-const ambientChords = [[130.81,196,261.63],[110,164.81,220],[146.83,220,293.66],[98,146.83,196]];
-function playAmbientPhrase() {
-  if (!isMusicOn || musicMode !== 'ambient') return;
-  const now = audioContext.currentTime + 0.05;
-  const chord = ambientChords[ambientStep % ambientChords.length];
-  chord.forEach((note, index) => tone(note, now + index * 0.08, 5.6, 0.08, index === 1 ? 'triangle' : 'sine'));
-  tone(chord[2] * 2, now + 1.4, 1.8, 0.045); tone(chord[1] * 2, now + 3.2, 1.5, 0.038);
-  ambientStep += 1;
+function buildTimeline() {
+  if (timeline) return timeline
+  prepareText()
+
+  const ideaIn = { opacity: 0, y: -20, rotationX: 5, skewX: '15deg' }
+  const ideaOut = { opacity: 0, y: 20, rotationY: 5, skewX: '-15deg' }
+  const memories = gsap.utils.toArray('.memory')
+
+  gsap.set(['.one', '.three', '.four', '.five .idea', '.memories', '.memory', '.six', '.nine', '.card'], { autoAlpha: 0 })
+  gsap.set('.chat-text span', { visibility: 'hidden' })
+  gsap.set('.color-bursts i', { visibility: 'hidden' })
+
+  timeline = gsap.timeline({ paused: true })
+    .to(container, { duration: .1, autoAlpha: 1 })
+    .fromTo('.one', { opacity: 0, y: 12 }, { duration: .8, autoAlpha: 1, y: 0 })
+    .to('.one', { duration: .7, autoAlpha: 0, y: 10 }, '+=2.3')
+    .fromTo('.three', { opacity: 0, y: 12 }, { duration: .75, autoAlpha: 1, y: 0 })
+    .to('.three', { duration: .7, autoAlpha: 0, y: 12 }, '+=1.8')
+    .fromTo('.four', { opacity: 0, scale: .2 }, { duration: .75, autoAlpha: 1, scale: 1 })
+    .from('.fake-button', { duration: .3, scale: .2, opacity: 0 })
+    .to('.chat-text span', { duration: .35, visibility: 'visible', stagger: .055 })
+    .to('.fake-button', { duration: .12, backgroundColor: '#25a565' })
+    .to('.four', { duration: .55, autoAlpha: 0, scale: .2, y: -130 }, '+=.8')
+    .fromTo('.idea-1', ideaIn, { duration: .7, autoAlpha: 1, y: 0, rotationX: 0, skewX: 0 })
+    .to('.idea-1', { duration: .7, ...ideaOut }, '+=1.35')
+    .fromTo('.idea-2', ideaIn, { duration: .7, autoAlpha: 1, y: 0, rotationX: 0, skewX: 0 })
+    .to('.idea-2', { duration: .7, ...ideaOut }, '+=1.35')
+    .fromTo('.idea-3', ideaIn, { duration: .7, autoAlpha: 1, y: 0, rotationX: 0, skewX: 0 })
+    .from('.idea-3 strong', { duration: .5, scale: .2, rotation: -8 }, '-=.2')
+    .to('.idea-3', { duration: .7, ...ideaOut }, '+=1.45')
+    .fromTo('.idea-4', ideaIn, { duration: .7, autoAlpha: 1, y: 0, rotationX: 0, skewX: 0 })
+    .to('.idea-4', { duration: .7, ...ideaOut }, '+=1.2')
+    .fromTo('.idea-5', { rotationX: 15, rotationZ: -10, skewY: '-5deg', y: 50, opacity: 0 }, { duration: .75, autoAlpha: 1, rotationX: 0, rotationZ: 0, skewY: 0, y: 0 })
+    .to('.idea-5 i', { duration: .7, rotation: 18, x: 10 }, '+=.35')
+    .to('.idea-5', { duration: .75, autoAlpha: 0, scale: .2 }, '+=1.7')
+    .fromTo('.idea-6', { opacity: 0 }, { duration: .1, autoAlpha: 1 })
+    .from('.idea-6 span', { duration: .85, scale: 3, opacity: 0, rotation: 15, ease: 'expo.out', stagger: .2 })
+    .to('.idea-6 span', { duration: .8, scale: 3, opacity: 0, rotation: -15, ease: 'expo.in', stagger: .2 }, '+=.9')
+    .to('.idea-6', { duration: .1, autoAlpha: 0 })
+    .to('.memories', { duration: .1, autoAlpha: 1 })
+
+  memories.forEach((memory, index) => {
+    const direction = index % 2 === 0 ? -8 : 8
+    timeline
+      .fromTo(memory, { autoAlpha: 0, scale: 1.8, rotation: direction }, { duration: .85, autoAlpha: 1, scale: 1, rotation: direction / 4, ease: 'power3.out' })
+      .to(memory, { duration: .55, autoAlpha: 0, scale: .82, rotation: -direction / 2 }, '+=1.35')
+  })
+
+  timeline
+    .to('.memories', { duration: .1, autoAlpha: 0 })
+    .fromTo('.balloons img', { opacity: .9, y: 0 }, { duration: 3.2, opacity: 1, y: '-125vh', stagger: .18, ease: 'none' })
+    .fromTo('.six', { opacity: 0 }, { duration: .1, autoAlpha: 1 }, '-=2.7')
+    .from('.portrait', { duration: .65, scale: 3.3, opacity: 0, x: 25, y: -25, rotationZ: -35 }, '-=2.6')
+    .from('.hat', { duration: .55, x: -120, y: 280, rotation: -180, opacity: 0 })
+    .from('.wish h2 span', { duration: .75, opacity: 0, y: -50, rotation: 150, skewX: '30deg', ease: 'elastic.out(1, .5)', stagger: .1 })
+    .fromTo('.wish h2 span', { scale: 1.35, rotationY: 150 }, { duration: .7, scale: 1, rotationY: 0, color: '#f06f98', ease: 'expo.out', stagger: .1 }, 'party')
+    .from('.wish p', { duration: .55, opacity: 0, y: 12, skewX: '-12deg' }, 'party')
+    .call(startFireworks, [], 'party')
+    .to('.color-bursts i', { duration: 1.45, visibility: 'visible', opacity: 0, scale: 70, repeat: 2, repeatDelay: 1.2, stagger: .25 })
+    .to('.six', { duration: .55, autoAlpha: 0, y: 30 })
+    .fromTo('.nine', { opacity: 0, y: -20, skewX: '12deg' }, { duration: 1, autoAlpha: 1, y: 0, skewX: 0 })
+    .from('#open-card', { duration: .55, opacity: 0, scale: .8 }, '+=.3')
+
+  return timeline
 }
 
-const birthdayNotes = [
-  [392,.38],[392,.2],[440,.62],[392,.62],[523.25,.62],[493.88,1.2],
-  [392,.38],[392,.2],[440,.62],[392,.62],[587.33,.62],[523.25,1.2],
-  [392,.38],[392,.2],[783.99,.62],[659.25,.62],[523.25,.62],[493.88,.62],[440,1.2],
-  [698.46,.38],[698.46,.2],[659.25,.62],[523.25,.62],[587.33,.62],[523.25,1.3],
-];
-function playBirthdaySong() {
-  if (!isMusicOn || musicMode !== 'birthday') return;
-  let cursor = audioContext.currentTime + 0.12;
-  birthdayNotes.forEach(([note, duration]) => {
-    tone(note, cursor, duration * 0.92, 0.12); tone(note * 2, cursor, duration * 0.55, 0.025, 'triangle');
-    cursor += duration;
-  });
+function scheduleNote(frequency, start, duration, volume, type = 'sine') {
+  const oscillator = audioContext.createOscillator()
+  const gain = audioContext.createGain()
+  const filter = audioContext.createBiquadFilter()
+  oscillator.type = type
+  oscillator.frequency.setValueAtTime(frequency, start)
+  filter.type = 'lowpass'
+  filter.frequency.value = 1600
+  gain.gain.setValueAtTime(.0001, start)
+  gain.gain.exponentialRampToValueAtTime(volume, start + .08)
+  gain.gain.exponentialRampToValueAtTime(.0001, start + duration)
+  oscillator.connect(filter).connect(gain).connect(masterGain)
+  oscillator.start(start)
+  oscillator.stop(start + duration + .05)
 }
 
-async function startMusic() {
-  setupAudio();
-  if (!audioContext) return;
-  await audioContext.resume(); isMusicOn = true;
-  masterGain.gain.cancelScheduledValues(audioContext.currentTime);
-  masterGain.gain.setValueAtTime(Math.max(masterGain.gain.value, 0.0001), audioContext.currentTime);
-  masterGain.gain.exponentialRampToValueAtTime(0.11, audioContext.currentTime + 0.8);
-  clearInterval(ambientTimer); clearInterval(birthdayTimer);
-  if (musicMode === 'ambient') { playAmbientPhrase(); ambientTimer = setInterval(playAmbientPhrase, 4800); }
-  else { playBirthdaySong(); birthdayTimer = setInterval(playBirthdaySong, 15000); }
-  soundButton.hidden = false; soundButton.classList.remove('is-muted');
-  soundButton.setAttribute('aria-label', '暂停音乐'); soundText.textContent = musicMode === 'birthday' ? '生日歌' : '音乐';
+function musicTick() {
+  if (!audioContext || audioContext.state !== 'running') return
+  const chords = [
+    [261.63, 329.63, 392, 493.88], [220, 261.63, 329.63, 392],
+    [174.61, 261.63, 349.23, 440], [196, 293.66, 392, 523.25]
+  ]
+  const chord = chords[Math.floor(musicStep / 8) % chords.length]
+  const note = chord[musicStep % chord.length]
+  const now = audioContext.currentTime + .03
+  scheduleNote(note, now, 1.35, .027)
+  scheduleNote(note * 2, now + .02, .65, .009, 'triangle')
+  if (musicStep % 8 === 0) scheduleNote(chord[0] / 2, now, 5.5, .018)
+  musicStep += 1
 }
 
-function pauseMusic() {
-  if (!audioContext) return;
-  isMusicOn = false; clearInterval(ambientTimer); clearInterval(birthdayTimer);
-  masterGain.gain.cancelScheduledValues(audioContext.currentTime);
-  masterGain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.35);
-  soundButton.classList.add('is-muted'); soundButton.setAttribute('aria-label', '播放音乐'); soundText.textContent = '已暂停';
+async function playMusic() {
+  if (!audioContext) {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)()
+    masterGain = audioContext.createGain()
+    const delay = audioContext.createDelay(2)
+    const feedback = audioContext.createGain()
+    delay.delayTime.value = .34
+    feedback.gain.value = .17
+    masterGain.gain.value = .82
+    masterGain.connect(audioContext.destination)
+    masterGain.connect(delay)
+    delay.connect(feedback).connect(delay)
+    delay.connect(audioContext.destination)
+  }
+  await audioContext.resume()
+  musicButton.classList.add('is-playing')
+  musicButton.setAttribute('aria-label', '暂停音乐')
+  if (!musicTimer) {
+    musicTick()
+    musicTimer = window.setInterval(musicTick, 720)
+  }
 }
 
-function switchToBirthdaySong() {
-  musicMode = 'birthday'; clearInterval(ambientTimer);
-  if (isMusicOn) { playBirthdaySong(); birthdayTimer = setInterval(playBirthdaySong, 15000); soundText.textContent = '生日歌'; }
+async function toggleMusic() {
+  if (!audioContext || audioContext.state === 'suspended') return playMusic()
+  await audioContext.suspend()
+  musicButton.classList.remove('is-playing')
+  musicButton.setAttribute('aria-label', '播放音乐')
 }
 
-openInvitation.addEventListener('click', async () => {
-  await startMusic(); document.querySelector('#journey').scrollIntoView({ behavior: 'smooth' });
-});
-soundButton.addEventListener('click', () => { if (isMusicOn) pauseMusic(); else startMusic(); });
+function startFireworks() {
+  if (fireworksRunning) return
+  fireworksRunning = true
+  const canvas = document.getElementById('fireworks')
+  const context = canvas.getContext('2d')
+  const particles = []
+  let lastBurst = 0
 
-let lights = 0;
-jellyButtons.forEach((button) => {
-  button.addEventListener('click', async () => {
-    if (button.classList.contains('is-lit')) return;
-    if (!audioContext) await startMusic();
-    button.classList.add('is-lit'); lights += 1; litCount.textContent = String(lights);
-    if (audioContext && isMusicOn) tone([523.25,587.33,659.25,783.99,880][lights - 1], audioContext.currentTime + 0.03, 1.4, 0.1);
-    if (lights === jellyButtons.length) {
-      ritualStage.classList.add('is-complete'); ritualComplete.classList.add('is-visible');
-      setTimeout(switchToBirthdaySong, 650);
+  const resize = () => {
+    const ratio = Math.min(window.devicePixelRatio || 1, 2)
+    canvas.width = innerWidth * ratio
+    canvas.height = innerHeight * ratio
+    context.setTransform(ratio, 0, 0, ratio, 0, 0)
+  }
+  const burst = (x = innerWidth * (.2 + Math.random() * .6), y = innerHeight * (.15 + Math.random() * .38)) => {
+    const colors = ['#ff6f91', '#ffbd33', '#56c78c', '#45a7e0', '#bd6ecf']
+    for (let i = 0; i < 34; i += 1) {
+      const angle = Math.random() * Math.PI * 2
+      const speed = Math.random() * 3 + 1.8
+      particles.push({ x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, life: 1, color: colors[i % colors.length], size: Math.random() * 2 + 1 })
     }
-  });
-});
-revealGift.addEventListener('click', () => document.querySelector('#finale').scrollIntoView({ behavior: 'smooth' }));
-
-const revealObserver = new IntersectionObserver((entries) => {
-  entries.forEach((entry) => {
-    if (entry.isIntersecting) { entry.target.classList.add('is-visible'); revealObserver.unobserve(entry.target); }
-  });
-}, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
-document.querySelectorAll('.reveal, .reveal-image').forEach((element) => revealObserver.observe(element));
-
-const canvas = document.querySelector('#ambient');
-const context = canvas.getContext('2d');
-let particles = []; let width = 0; let height = 0;
-function resizeCanvas() {
-  const ratio = Math.min(window.devicePixelRatio || 1, 2);
-  width = window.innerWidth; height = window.innerHeight;
-  canvas.width = width * ratio; canvas.height = height * ratio;
-  canvas.style.width = `${width}px`; canvas.style.height = `${height}px`;
-  context.setTransform(ratio, 0, 0, ratio, 0, 0);
-  particles = Array.from({ length: Math.min(42, Math.max(20, Math.round(width / 22))) }, (_, index) => ({
-    x: (index * 83) % width, y: (index * 149) % height, radius: 0.6 + (index % 4) * 0.55,
-    speed: 0.12 + (index % 5) * 0.035, phase: index * 0.71,
-  }));
+  }
+  const draw = time => {
+    context.clearRect(0, 0, innerWidth, innerHeight)
+    if (time - lastBurst > 1000) { burst(); lastBurst = time }
+    particles.forEach(particle => {
+      particle.x += particle.vx
+      particle.y += particle.vy
+      particle.vy += .018
+      particle.vx *= .985
+      particle.life -= .016
+      context.globalAlpha = Math.max(0, particle.life)
+      context.fillStyle = particle.color
+      context.beginPath()
+      context.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2)
+      context.fill()
+    })
+    for (let i = particles.length - 1; i >= 0; i -= 1) if (particles[i].life <= 0) particles.splice(i, 1)
+    fireworksFrame = requestAnimationFrame(draw)
+  }
+  resize()
+  canvas.addEventListener('click', event => burst(event.clientX, event.clientY))
+  fireworksFrame = requestAnimationFrame(draw)
 }
-function drawAmbient(time = 0) {
-  context.clearRect(0, 0, width, height);
-  particles.forEach((particle) => {
-    particle.y -= particle.speed; if (particle.y < -10) particle.y = height + 10;
-    const x = particle.x + Math.sin(time * 0.0004 + particle.phase) * 12;
-    context.beginPath(); context.arc(x, particle.y, particle.radius, 0, Math.PI * 2);
-    context.fillStyle = `rgba(175,231,244,${0.12 + particle.radius * 0.08})`; context.fill();
-  });
-  requestAnimationFrame(drawAmbient);
+
+function stopFireworks() {
+  if (fireworksFrame) cancelAnimationFrame(fireworksFrame)
+  fireworksFrame = null
+  fireworksRunning = false
+  const canvas = document.getElementById('fireworks')
+  canvas.getContext('2d')?.clearRect(0, 0, canvas.width, canvas.height)
 }
-window.addEventListener('resize', resizeCanvas, { passive: true });
-resizeCanvas(); requestAnimationFrame(drawAmbient);
+
+startButton.addEventListener('click', async () => {
+  startSign.style.display = 'none'
+  container.setAttribute('aria-hidden', 'false')
+  await playMusic()
+  buildTimeline().play(0)
+})
+
+musicButton.addEventListener('click', toggleMusic)
+
+openCardButton.addEventListener('click', () => {
+  stopFireworks()
+  gsap.to('.nine', { duration: .55, autoAlpha: 0, y: -18 })
+  gsap.fromTo('.card', { autoAlpha: 0, scale: .86, rotation: -3 }, { duration: .9, autoAlpha: 1, scale: 1, rotation: 0, ease: 'back.out(1.2)', delay: .35 })
+})
+
+replayButton.addEventListener('click', () => {
+  stopFireworks()
+  gsap.set('.card', { autoAlpha: 0 })
+  timeline.restart()
+})
+
+document.addEventListener('touchmove', event => event.preventDefault(), { passive: false })
+window.addEventListener('resize', () => { if (fireworksRunning) { stopFireworks(); startFireworks() } })

@@ -3,148 +3,95 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#020b16">
-  <meta name="description" content="送给朱佳音的一份梦幻海底生日祝福。">
+  <meta name="theme-color" content="#fffdf8">
+  <meta name="description" content="送给朱佳音的一份生日祝福">
   <title>朱佳音，生日快乐</title>
-  <link rel="preload" href="./images/ocean-birthday.jpg?v=20260913-1" as="image">
-  <link rel="stylesheet" href="./style.css?v=20260913-1">
+  <link rel="preload" href="./images/birthday-star.jpg" as="image">
+  <link rel="stylesheet" href="./style.css?v=20261002-4">
 </head>
 <body>
-  <canvas id="ambient" class="ambient" aria-hidden="true"></canvas>
-  <button class="sound" id="sound" type="button" aria-label="暂停音乐" hidden>
-    <span class="sound__bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-    <span class="sound__text">音乐</span>
-  </button>
+  <button class="music-button" id="music-button" type="button" aria-label="播放音乐"><span></span></button>
 
-  <main>
-    <section class="invitation" id="top" aria-label="生日邀请">
-      <img class="invitation__art" src="./images/ocean-birthday.jpg" alt="深蓝海水中，一只白鲸游向生日蛋糕和五只发光的水母">
-      <div class="invitation__shade"></div>
-      <div class="invitation__caustics" aria-hidden="true"></div>
-      <div class="invitation__content">
-        <p class="kicker">A BIRTHDAY INVITATION · 2026</p>
-        <h1><span>朱佳音</span><strong>生日快乐</strong></h1>
-        <p class="invitation__date">农历九月十九</p>
-        <div class="countdown" id="countdown" aria-label="生日倒计时">
-          <div><strong id="days">--</strong><span>天</span></div>
-          <div><strong id="hours">--</strong><span>时</span></div>
-          <div><strong id="minutes">--</strong><span>分</span></div>
-          <div><strong id="seconds">--</strong><span>秒</span></div>
-        </div>
-        <p class="countdown__caption" id="countdown-caption">距离她的生日还有</p>
-        <button class="open-invitation" id="open-invitation" type="button">
-          <span>拆开这份生日邀请</span><i aria-hidden="true">↓</i>
-        </button>
-      </div>
-      <a class="skip" href="#journey">提前看看生日旅程</a>
+  <section class="start-sign" id="start-sign">
+    <p>温馨提醒：打开声音，效果会更完整哦 😊</p>
+    <button id="start-button" type="button">准备好了，我们开始吧！</button>
+  </section>
+
+  <main class="container" id="container" aria-hidden="true">
+    <section class="one layer">
+      <h1>你好啊 <strong>朱佳音</strong></h1>
+      <p>今天，是属于你的日子。</p>
     </section>
 
-    <section class="journey" id="journey">
-      <div class="journey__copy reveal">
-        <p class="kicker">ONE HAPPY DAY</p>
-        <h2>后来再看这些照片，<br>那天还是让人觉得很开心。</h2>
-        <p>没有非要记住的某个瞬间。只是一路走走看看、随便聊天，原本普通的一天，也就这样被好好保存了下来。</p>
+    <section class="three layer"><p>今天是你的生日！</p></section>
+
+    <section class="four layer">
+      <div class="text-box">
+        <p class="chat-text">朱佳音，生日快乐！愿你新的一岁平安顺遂，每天都有好心情。</p>
+        <span class="fake-button">发送</span>
       </div>
-      <div class="journey__line" aria-hidden="true"><i></i></div>
     </section>
 
-    <section class="memories" aria-label="一起看过的风景">
-      <article class="memory memory--jellyfish">
-        <figure class="memory__image reveal-image">
-          <img src="./images/jellyfish.jpg" alt="蓝色水族箱里发光的水母" loading="lazy">
-          <figcaption><span>01</span><p>那天的蓝色，从这里开始。</p></figcaption>
-        </figure>
-        <div class="memory__words reveal">
-          <p class="kicker">AQUARIUM / 01</p><h3>像一场漂浮的烟花</h3>
-          <p>水母在光里慢慢升起。我们站在玻璃外面，看它们把整个水族箱变成一小片星空。</p>
-        </div>
+    <section class="five layer">
+      <p class="idea idea-1">本来只想这样说。</p>
+      <p class="idea idea-2">但我又认真想了想。</p>
+      <p class="idea idea-3">只是四个字，好像还不够<strong>特别</strong>。</p>
+      <p class="idea idea-4">因为，</p>
+      <p class="idea idea-5"><span>你值得一个特别一点的生日</span><i>☺</i></p>
+      <p class="idea idea-6"><span>所</span><span>以</span></p>
+    </section>
+
+    <section class="memories layer" aria-label="一起见过的风景">
+      <figure class="memory memory-1"><img src="./images/jellyfish.jpg" alt="蓝色水族箱里发光的水母"></figure>
+      <figure class="memory memory-2"><img src="./images/beluga.jpg" alt="深蓝水中游过的白鲸"></figure>
+      <figure class="memory memory-3"><img src="./images/forest.jpg" alt="灯光下的森林与水面"></figure>
+      <figure class="memory memory-4"><img src="./images/lizard.jpg" alt="岩石上的蜥蜴"></figure>
+      <div class="memory-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    </section>
+
+    <section class="six layer">
+      <div class="portrait-wrap">
+        <img class="portrait" src="./images/birthday-star.jpg" alt="朱佳音在树下抱着尤克里里">
+        <img class="hat" src="./images/template/hat.svg" alt="">
+      </div>
+      <div class="wish">
+        <h2>生日快乐！</h2>
+        <p>愿新的一岁，自由、明亮，始终被温柔以待。</p>
+      </div>
+    </section>
+
+    <div class="balloons layer" aria-hidden="true">
+      <img src="./images/template/balloon2.svg" alt=""><img src="./images/template/balloon1.svg" alt="">
+      <img src="./images/template/balloon3.svg" alt=""><img src="./images/template/balloon1.svg" alt="">
+      <img src="./images/template/balloon2.svg" alt=""><img src="./images/template/balloon3.svg" alt="">
+      <img src="./images/template/balloon2.svg" alt=""><img src="./images/template/balloon3.svg" alt="">
+      <img src="./images/template/balloon1.svg" alt=""><img src="./images/template/balloon2.svg" alt="">
+      <img src="./images/template/balloon3.svg" alt=""><img src="./images/template/balloon1.svg" alt="">
+    </div>
+
+    <div class="color-bursts layer" aria-hidden="true">
+      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+    </div>
+
+    <section class="nine layer">
+      <p>最后，还有一页想留给你。</p>
+      <button id="open-card" type="button">打开贺卡</button>
+    </section>
+
+    <section class="card layer" aria-label="生日贺卡">
+      <article>
+        <p class="card-date">2026 · 10 · 28</p>
+        <h2>朱佳音：</h2>
+        <div class="card-copy">（这里留给你写想说的话）</div>
+        <p class="signature">逐星</p>
       </article>
-      <article class="memory memory--beluga">
-        <figure class="memory__image reveal-image">
-          <img src="./images/beluga.jpg" alt="人群前方游过的白鲸" loading="lazy">
-          <figcaption><span>02</span><p>白鲸从人群前游过。</p></figcaption>
-        </figure>
-        <div class="memory__words reveal">
-          <p class="kicker">AQUARIUM / 02</p><h3>等它靠近，再挥挥手</h3>
-          <p>隔着深蓝色的水和一排举起的相机，它还是游到了眼前。现在，它也赶来参加这场生日。</p>
-        </div>
-      </article>
-      <article class="memory memory--forest">
-        <figure class="memory__image reveal-image">
-          <img src="./images/forest.jpg" alt="灯光下的森林与水面" loading="lazy">
-          <figcaption><span>03</span><p>一路走走看看。</p></figcaption>
-        </figure>
-        <div class="memory__words reveal">
-          <p class="kicker">AQUARIUM / 03</p><h3>拐进一片会发光的森林</h3>
-          <p>树叶、流水和悬在半空的光球，让水族馆里又多了一个意外的小世界。</p>
-        </div>
-      </article>
-      <article class="memory memory--lizard">
-        <figure class="memory__image reveal-image">
-          <img src="./images/lizard.jpg" alt="岩石上晒太阳的蜥蜴" loading="lazy">
-          <figcaption><span>04</span><p>还有认真晒太阳的它。</p></figcaption>
-        </figure>
-        <div class="memory__words reveal">
-          <p class="kicker">AQUARIUM / 04</p><h3>遇见一点意料之外的可爱</h3>
-          <p>后来想想，开心大概就是这样：没有特别安排，却总有值得停下来多看一眼的东西。</p>
-        </div>
-      </article>
+      <button id="replay" type="button">再看一次</button>
     </section>
 
-    <section class="ritual" id="ritual">
-      <div class="ritual__intro reveal">
-        <p class="kicker">MAKE FIVE LITTLE WISHES</p>
-        <h2>让五只水母，<br>为她点亮生日烛光。</h2>
-        <p>依次轻触每一只水母。全部亮起后，生日歌和最后一份礼物就会出现。</p>
-      </div>
-      <div class="ritual__stage" id="ritual-stage">
-        <img src="./images/ocean-birthday.jpg" alt="白鲸、生日蛋糕和五只水母">
-        <button class="jelly jelly--1" type="button" aria-label="点亮第一只水母"><i></i><span>1</span></button>
-        <button class="jelly jelly--2" type="button" aria-label="点亮第二只水母"><i></i><span>2</span></button>
-        <button class="jelly jelly--3" type="button" aria-label="点亮第三只水母"><i></i><span>3</span></button>
-        <button class="jelly jelly--4" type="button" aria-label="点亮第四只水母"><i></i><span>4</span></button>
-        <button class="jelly jelly--5" type="button" aria-label="点亮第五只水母"><i></i><span>5</span></button>
-        <div class="ritual__progress" aria-live="polite"><strong id="lit-count">0</strong><span>/ 5</span></div>
-        <div class="ritual__complete" id="ritual-complete" aria-live="polite">
-          <p>生日烛光已经全部亮起</p>
-          <button id="reveal-gift" type="button">打开最后一份礼物</button>
-        </div>
-      </div>
-    </section>
-
-    <section class="finale" id="finale">
-      <img class="finale__portrait" src="./images/birthday-star.jpg" alt="朱佳音在树下抱着尤克里里">
-      <div class="finale__veil"></div>
-      <div class="finale__headline reveal">
-        <p class="kicker">HAPPY BIRTHDAY, JIAYIN</p>
-        <h2>朱佳音<br><strong>生日快乐</strong></h2>
-      </div>
-    </section>
-
-    <section class="letter" id="letter">
-      <article class="letter__paper reveal">
-        <p class="kicker">A LETTER FOR YOUR NEW YEAR</p>
-        <h2>佳音，生日快乐。</h2>
-        <div class="letter__body">
-          <p>后来再翻到这些照片，才发现那天留在记忆里的，不只是水母、白鲸和一路见到的动物，还有边走边聊时那种很轻松的感觉。原本只是一次普通的出游，因为同行的人不同，也就成了值得记住的一天。</p>
-          <p>你安静、温柔，也一直有自己的想法。希望新一岁的你，可以自由地走自己想走的路，拥有很多简单的快乐；也希望你的善良总能得到温柔的回应，期待的事情都慢慢传来好消息。</p>
-          <p>生日快乐。</p>
-        </div>
-        <p class="letter__signature">逐星</p>
-      </article>
-    </section>
-
-    <section class="ending" id="ending">
-      <div class="ending__rings" aria-hidden="true"><i></i><i></i><i></i></div>
-      <div class="ending__content reveal">
-        <p class="kicker">THE END · AND A NEW BEGINNING</p>
-        <h2>静候佳音</h2>
-        <p>愿你自由、快乐，善良总被温柔回应。<br>愿所有认真等待的事情，都迎来好消息。</p>
-        <span>农历九月十九 · 逐星</span>
-        <a href="#top">再看一遍</a>
-      </div>
-    </section>
+    <canvas id="fireworks" aria-hidden="true"></canvas>
   </main>
-  <script src="./script.js?v=20260913-1"></script>
+
+  <script src="./vendor/gsap.min.js"></script>
+  <script src="./script.js?v=20261002-4"></script>
 </body>
 </html>
