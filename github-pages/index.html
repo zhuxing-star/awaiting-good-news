@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#fffdf8">
   <meta name="description" content="送给朱佳音的一份生日祝福">
-  <title>朱佳音，生日快乐</title>
+  <title>佳音，生日快乐</title>
   <link rel="preload" href="./images/birthday-star.jpg" as="image">
-  <link rel="preload" href="./fonts/MaShanZheng-Regular.ttf?v=20261002-14" as="font" type="font/ttf" crossorigin>
-  <link rel="stylesheet" href="./style.css?v=20261002-14">
+  <link rel="preload" href="./fonts/MaShanZheng-Regular.ttf?v=20261002-15" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="./style.css?v=20261002-15">
 </head>
 <body>
   <section class="lock-screen" id="lock-screen" aria-label="生日礼物倒计时">
     <div class="lock-dots lock-dots--top" aria-hidden="true"><i></i><i></i><i></i></div>
-    <p class="lock-for">for 佳音</p>
+    <p class="lock-for">FOR 佳音</p>
     <div class="gift-lock" aria-hidden="true">
       <span class="gift-bow gift-bow--left"></span><span class="gift-bow gift-bow--right"></span>
       <span class="gift-lid"></span><span class="gift-box"></span><span class="gift-ribbon"></span>
@@ -28,15 +28,15 @@
       <span><strong id="seconds">--</strong><small>秒</small></span>
     </div>
     <form class="unlock-form" id="unlock-form">
-      <p>如果你已经猜到了，也可以提前打开</p>
+      <p>如果你知道密码，也可以提前打开</p>
       <label class="password-box">
         <span class="sr-only">输入四位密码</span>
         <input id="unlock-password" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="••••">
       </label>
       <p class="password-error" id="password-error" aria-live="polite"></p>
-      <button type="submit">提前打开礼物</button>
+      <button type="submit">提前打开</button>
     </form>
-    <p class="lock-signature">逐星 · 提前藏好的一份祝福</p>
+    <p class="lock-signature">提前藏好的一份祝福 · 逐星</p>
     <div class="lock-dots lock-dots--bottom" aria-hidden="true"><i></i><i></i></div>
   </section>
 
@@ -61,16 +61,16 @@
 
     <section class="four layer">
       <div class="text-box">
-        <p class="chat-text">朱佳音，生日快乐！愿你新的一岁平安顺遂，每天都有好心情。</p>
+        <p class="chat-text">佳音，生日快乐！愿你新的一岁平安顺遂，每天都有好心情。</p>
         <span class="fake-button">发送</span>
       </div>
     </section>
 
     <section class="five layer">
-      <p class="idea idea-1">这个祝福好像没有什么新意。</p>
+      <p class="idea idea-1">这样的祝福好像没有什么新意。</p>
       <p class="idea idea-2">我想给你一个<strong>不一样</strong>的生日祝福 <span class="smiley">:)</span></p>
       <p class="idea idea-3 idea-3--big"><span>所</span><span>以</span></p>
-      <p class="idea idea-4">我决定把沿途的风景分享给你。</p>
+      <p class="idea idea-4">我决定以这样的形式去呈现，并分享一下我沿途的一些风景</p>
     </section>
 
     <section class="memories layer" aria-label="一起见过的风景">
@@ -100,7 +100,7 @@
       </figure>
       <figure class="memory memory--portrait">
         <img src="./images/memories/blessing-cup.jpg" alt="写着祈福二字的纸杯">
-        <figcaption><span>灵隐寺纸杯惜福</span><small>07 / 13</small></figcaption>
+        <figcaption><span>灵隐寺惜福纸杯</span><small>07 / 13</small></figcaption>
       </figure>
       <figure class="memory memory--portrait">
         <img src="./images/memories/rain-chain.jpg" alt="雨水沿着莲花雨链落下">
@@ -108,7 +108,7 @@
       </figure>
       <figure class="memory memory--landscape">
         <img src="./images/memories/mural.jpg" alt="描绘古寺与人物的壁画">
-        <figcaption><span>济公壁画木头从水井中冒出</span><small>09 / 13</small></figcaption>
+        <figcaption><span>灵隐济公壁画</span><small>09 / 13</small></figcaption>
       </figure>
       <figure class="memory memory--portrait">
         <img src="./images/memories/forest-path.jpg" alt="雨后树林中的石板路">
@@ -155,24 +155,23 @@
     </div>
 
     <section class="nine layer">
-      <p>最后，还有一页想留给你。</p>
-      <button id="open-card" type="button">打开贺卡</button>
+      <p>最后，还有一封信想留给你。</p>
+      <button id="open-card" type="button">打开</button>
     </section>
 
     <section class="card layer" aria-label="生日贺卡">
       <article>
-        <p class="card-date">2026 · 10 · 28</p>
-        <h2>朱佳音：</h2>
+        <h2>佳音：</h2>
         <div class="card-copy">（这里留给你写想说的话）</div>
         <p class="signature">逐星</p>
       </article>
-      <button id="replay" type="button">再看一次</button>
+      <button id="replay" type="button">Again</button>
     </section>
 
     <canvas id="fireworks" aria-hidden="true"></canvas>
   </main>
 
   <script src="./vendor/gsap.min.js"></script>
-  <script src="./script.js?v=20261002-14"></script>
+  <script src="./script.js?v=20261002-15"></script>
 </body>
 </html>

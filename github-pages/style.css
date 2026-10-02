@@ -1,6 +1,6 @@
 @font-face {
   font-family: "Ma Shan Zheng";
-  src: url("./fonts/MaShanZheng-Regular.ttf?v=20261002-14") format("truetype");
+  src: url("./fonts/MaShanZheng-Regular.ttf?v=20261002-15") format("truetype");
   font-style: normal;
   font-weight: 400;
   font-display: block;
@@ -120,6 +120,7 @@ button { font: inherit; }
 .five { position: absolute; }
 .idea { position: absolute; left: 20px; right: 20px; margin: 0; font-size: clamp(26px, 6vw, 45px); line-height: 1.55; }
 .idea-2 { white-space: nowrap; font-size: clamp(18px, 4.8vw, 42px); }
+.idea-4 { font-size: clamp(22px, 5vw, 40px); }
 .idea-2 strong { display: inline-block; margin: 0 5px; padding: 1px 8px 3px; border-radius: 4px; color: white; background: var(--blue); font-weight: 400; }
 .idea-2 .smiley { display: inline-block; white-space: nowrap; transform-origin: center; }
 .idea-3--big { display: flex; justify-content: center; gap: 18px; }
