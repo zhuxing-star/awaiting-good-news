@@ -1,6 +1,6 @@
 @font-face {
-  font-family: "LXGW WenKai";
-  src: url("./fonts/LXGWWenKai-Regular.ttf") format("truetype");
+  font-family: "Ma Shan Zheng";
+  src: url("./fonts/MaShanZheng-Regular.ttf") format("truetype");
   font-style: normal;
   font-weight: 400;
   font-display: block;
@@ -18,10 +18,10 @@
 html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; overscroll-behavior: none; }
 body {
   color: var(--ink); background: var(--paper);
-  font-family: "LXGW WenKai", sans-serif;
+  font-family: "Ma Shan Zheng", cursive;
   -webkit-font-smoothing: antialiased; user-select: none;
 }
-html, body, body *, body *::before, body *::after { font-family: "LXGW WenKai", sans-serif !important; }
+html, body, body *, body *::before, body *::after { font-family: "Ma Shan Zheng", cursive !important; }
 button { font: inherit; }
 [hidden] { display: none !important; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
@@ -68,7 +68,7 @@ button { font: inherit; }
 .unlock-form { width: 100%; margin-top: 22px; }
 .unlock-form > p:first-child { margin: 0 0 12px; color: #6f695f; font-size: 14px; }
 .password-box { display: block; margin: 0 auto; width: min(226px, 75vw); }
-.password-box input { width: 100%; height: 49px; padding: 0 18px; border: 1px solid #cfc8bd; border-radius: 5px; outline: none; color: #554f47; background: white; text-align: center; font: 21px/1 "LXGW WenKai", sans-serif; letter-spacing: 1.55em; text-indent: 1.55em; box-shadow: 0 5px 14px rgba(93,76,54,.05); }
+.password-box input { width: 100%; height: 49px; padding: 0 18px; border: 1px solid #cfc8bd; border-radius: 5px; outline: none; color: #554f47; background: white; text-align: center; font: 21px/1 "Ma Shan Zheng", cursive; letter-spacing: 1.55em; text-indent: 1.55em; box-shadow: 0 5px 14px rgba(93,76,54,.05); }
 .password-box input:focus { border-color: var(--pink); box-shadow: 0 0 0 3px rgba(240,111,152,.1); }
 .password-box input::placeholder { color: #bbb1a5; opacity: 1; }
 .password-error { min-height: 19px; margin: 10px 0 3px; color: #cf587c; font-size: 12px; letter-spacing: .03em; }
@@ -121,9 +121,7 @@ button { font: inherit; }
 .idea { position: absolute; left: 20px; right: 20px; margin: 0; font-size: clamp(26px, 6vw, 45px); line-height: 1.55; }
 .idea-2 { white-space: nowrap; font-size: clamp(18px, 4.8vw, 42px); }
 .idea-2 strong { display: inline-block; margin: 0 5px; padding: 1px 8px 3px; border-radius: 4px; color: white; background: var(--blue); font-weight: 400; }
-.idea-5 { white-space: nowrap; font-size: clamp(21px, 5.6vw, 50px); }
-.idea-5 span { display: inline-block; }
-.idea-5 .smiley { white-space: nowrap; transform-origin: center; }
+.idea-2 .smiley { display: inline-block; white-space: nowrap; transform-origin: center; }
 .idea-3--big { display: flex; justify-content: center; gap: 18px; }
 .idea-3--big span { display: inline-block; font-size: clamp(120px, 34vw, 230px); }
 

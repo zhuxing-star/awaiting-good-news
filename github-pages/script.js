@@ -106,10 +106,8 @@ function buildTimeline() {
     .to('.idea-1', { duration: .7, ...ideaOut }, '+=1.55')
     .fromTo('.idea-2', ideaIn, { duration: .7, autoAlpha: 1, y: 0, rotationX: 0, skewX: 0 })
     .from('.idea-2 strong', { duration: .5, scale: .2, rotation: -8 }, '-=.2')
-    .to('.idea-2', { duration: .7, ...ideaOut }, '+=1.65')
-    .fromTo('.idea-5', { rotationX: 15, rotationZ: -10, skewY: '-5deg', y: 50, opacity: 0 }, { duration: .7, autoAlpha: 1, rotationX: 0, rotationZ: 0, skewY: 0, y: 0 })
-    .to('.idea-5 .smiley', { duration: .7, rotation: 90, x: 8 }, '+=.4')
-    .to('.idea-5', { duration: .7, scale: .2, autoAlpha: 0 }, '+=2')
+    .to('.idea-2 .smiley', { duration: .7, rotation: 90, x: 8 }, '+=.4')
+    .to('.idea-2', { duration: .7, ...ideaOut }, '+=1.4')
     .fromTo('.idea-3', { opacity: 0 }, { duration: .1, autoAlpha: 1 })
     .from('.idea-3 span', { duration: .85, scale: 3, opacity: 0, rotation: 15, ease: 'expo.out', stagger: .2 })
     .to('.idea-3 span', { duration: .8, scale: 3, opacity: 0, rotation: -15, ease: 'expo.in', stagger: .2 }, '+=.9')
@@ -215,7 +213,7 @@ function stopFireworks() {
 }
 
 startButton.addEventListener('click', async () => {
-  await document.fonts.load('16px "LXGW WenKai"')
+  await document.fonts.load('16px "Ma Shan Zheng"')
   startSign.style.display = 'none'
   container.setAttribute('aria-hidden', 'false')
   await playMusic()
