@@ -170,6 +170,7 @@ function stopFireworks() {
 }
 
 startButton.addEventListener('click', async () => {
+  await document.fonts.load('16px "Ma Shan Zheng"')
   startSign.style.display = 'none'
   container.setAttribute('aria-hidden', 'false')
   await playMusic()
