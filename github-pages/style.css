@@ -221,10 +221,20 @@ button:disabled { cursor: wait; opacity: .55; }
   color: #655f59; font-size: clamp(16px, 3.8vw, 19px); line-height: 1.9; letter-spacing: .045em;
   scrollbar-color: #d9c8b8 transparent; scrollbar-width: thin; -webkit-overflow-scrolling: touch;
 }
-.card-copy p { margin: 0 0 1.15em; }
+.card-copy p { margin: 0 0 1.15em; text-indent: 2em; }
 .card-copy p:last-child { margin-bottom: 0; }
 .signature { flex: none; margin: 16px 0 0; text-align: right; font-size: 20px; letter-spacing: .14em; }
 .card > button { margin-top: 20px; padding-block: 10px; }
+
+@media (min-width: 768px) {
+  .card { padding: 24px; }
+  .card article {
+    width: min(800px, 82vw); height: min(820px, 82svh); padding: 30px clamp(48px, 6vw, 72px) 24px;
+  }
+  .card h2 { margin: 10px 0 18px; }
+  .card-copy { font-size: 18px; line-height: 1.9; letter-spacing: .04em; }
+  .card > button { margin-top: 14px; }
+}
 
 #fireworks { position: fixed; inset: 0; z-index: 7; width: 100%; height: 100%; pointer-events: none; }
 
