@@ -300,7 +300,7 @@ function buildTimeline() {
     .fromTo('.wish h2 span', { scale: 1.35, rotationY: 150 }, { duration: .7, scale: 1, rotationY: 0, color: '#f06f98', ease: 'expo.out', stagger: .1 }, 'party')
     .from('.wish p', { duration: .55, opacity: 0, y: 12, skewX: '-12deg' }, 'party')
     .call(startFireworks, [], 'party')
-    .to('.color-bursts i', { duration: 1.5, visibility: 'visible', opacity: 0, scale: 80, repeat: 1, repeatDelay: 1.1, stagger: .3 })
+    .to('.color-bursts i', { duration: 1.5, visibility: 'visible', opacity: 0, scale: 80, stagger: .3 })
     .to('.six', { duration: .55, autoAlpha: 0, y: 30 })
     .fromTo('.nine', { opacity: 0, y: -20, skewX: '12deg' }, { duration: 1, autoAlpha: 1, y: 0, skewX: 0 })
     .fromTo('#open-card', { autoAlpha: 0, scale: .8 }, { duration: .55, autoAlpha: 1, scale: 1, clearProps: 'transform' }, '+=.3')
