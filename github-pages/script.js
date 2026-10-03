@@ -23,7 +23,7 @@ const storyImages = [...memoryImages, portraitImage]
 const startButtonLabel = startButton.textContent
 const assetSizes = new Map([
   ['./music/bgMusic.m4a?v=20261003-19', 3338013],
-  ['./fonts/MaShanZheng-Regular.ttf?v=20261003-19', 214384],
+  ['./fonts/MaShanZheng-Regular.ttf?v=20261003-21', 329660],
   ['./images/memories/leifeng.webp', 186398],
   ['./images/memories/west-lake.webp', 151434],
   ['./images/memories/sunset.webp', 44962],
@@ -164,7 +164,7 @@ function prepareExperience() {
 async function loadCriticalAssets() {
   loadingRetry.hidden = true
   try {
-    const fontUrl = './fonts/MaShanZheng-Regular.ttf?v=20261003-19'
+    const fontUrl = './fonts/MaShanZheng-Regular.ttf?v=20261003-21'
     await Promise.all([
       prepareMusic(),
       preloadStoryAssets(),
@@ -419,7 +419,9 @@ replayButton.addEventListener('click', () => {
   timeline.restart()
 })
 
-document.addEventListener('touchmove', event => event.preventDefault(), { passive: false })
+document.addEventListener('touchmove', event => {
+  if (!event.target.closest('.card-copy')) event.preventDefault()
+}, { passive: false })
 window.addEventListener('resize', () => { if (fireworksRunning) { stopFireworks(); startFireworks() } })
 loadingRetry.addEventListener('click', () => {
   const retryUrl = new URL(window.location.href)

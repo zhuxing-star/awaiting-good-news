@@ -1,6 +1,6 @@
 @font-face {
   font-family: "Ma Shan Zheng";
-  src: url("./fonts/MaShanZheng-Regular.ttf?v=20261003-19") format("truetype");
+  src: url("./fonts/MaShanZheng-Regular.ttf?v=20261003-21") format("truetype");
   font-style: normal;
   font-weight: 400;
   font-display: block;
@@ -205,18 +205,25 @@ button:disabled { cursor: wait; opacity: .55; }
 .nine button, .card > button { pointer-events: auto; background: white; }
 .nine button { opacity: 0; visibility: hidden; }
 
-.card { z-index: 8; background: #fff8ef; }
+.card { z-index: 8; padding: clamp(18px, 4vw, 34px) 20px; background: #fff8ef; }
 .card article {
-  position: relative; width: min(650px, 90vw); min-height: min(620px, 72vh); padding: 58px clamp(34px, 8vw, 72px);
-  text-align: left; background: white; border: 1px solid #eadfce; box-shadow: 0 18px 65px rgba(95,73,46,.13); transform: rotate(-1deg);
+  position: relative; display: flex; flex-direction: column; width: min(650px, 90vw); height: min(760px, 74svh); min-height: 0;
+  padding: 36px clamp(28px, 7vw, 66px) 28px; overflow: hidden; text-align: left; background: white;
+  border: 1px solid #eadfce; box-shadow: 0 18px 65px rgba(95,73,46,.13); transform: rotate(-1deg);
 }
 .card article::before, .card article::after { content: ""; position: absolute; width: 18px; height: 18px; border-radius: 50%; }
 .card article::before { right: 26px; top: 25px; background: #f29abb; box-shadow: 25px 11px 0 #6fc4e6; }
 .card article::after { left: 24px; bottom: 24px; background: #87cc7e; box-shadow: 23px -8px 0 #f0c45e; }
 .card-date { color: #999; font-size: 12px; line-height: 1; letter-spacing: .22em; }
-.card h2 { margin: 32px 0; font-size: clamp(26px, 6vw, 36px); font-weight: 400; }
-.card-copy { min-height: 250px; color: #aaa; font-size: clamp(16px, 3.8vw, 19px); line-height: 2; letter-spacing: .09em; }
-.signature { margin: 24px 0 0; text-align: right; font-size: 20px; letter-spacing: .14em; }
+.card h2 { flex: none; margin: 16px 0 20px; font-size: clamp(26px, 6vw, 36px); font-weight: 400; }
+.card-copy {
+  flex: 1; min-height: 0; padding: 0 10px 18px 0; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y;
+  color: #655f59; font-size: clamp(16px, 3.8vw, 19px); line-height: 1.9; letter-spacing: .045em;
+  scrollbar-color: #d9c8b8 transparent; scrollbar-width: thin; -webkit-overflow-scrolling: touch;
+}
+.card-copy p { margin: 0 0 1.15em; }
+.card-copy p:last-child { margin-bottom: 0; }
+.signature { flex: none; margin: 16px 0 0; text-align: right; font-size: 20px; letter-spacing: .14em; }
 .card > button { margin-top: 20px; padding-block: 10px; }
 
 #fireworks { position: fixed; inset: 0; z-index: 7; width: 100%; height: 100%; pointer-events: none; }
@@ -234,8 +241,9 @@ button:disabled { cursor: wait; opacity: .55; }
   .portrait-wrap { width: 72vw; height: 52svh; }
   .hat { width: 58px; top: -40px; left: 43%; }
   .wish { margin-top: 14px; }
-  .card article { min-height: 70svh; padding-top: 46px; }
-  .card-copy { min-height: 210px; }
+  .card article { width: 92vw; height: 76svh; padding: 30px 24px 22px; }
+  .card h2 { margin: 12px 0 16px; }
+  .card-copy { padding-right: 6px; font-size: 16px; line-height: 1.85; }
 }
 
 @media (max-height: 700px) {
@@ -246,7 +254,5 @@ button:disabled { cursor: wait; opacity: .55; }
   .lock-signature { display: none; }
   .portrait-wrap { height: 46svh; }
   .wish h2 { font-size: 38px; }
-  .card article { min-height: 75svh; padding-top: 36px; }
-  .card h2 { margin: 20px 0; }
-  .card-copy { min-height: 150px; }
+  .card article { height: 72svh; padding-top: 28px; }
 }
