@@ -4,7 +4,7 @@
 
 ## 在线访问
 
-[https://zhuxing-star.github.io/birthday-gift/](https://zhuxing-star.github.io/birthday-gift/)
+[https://zhuxing-star.github.io/awaiting-good-news/](https://zhuxing-star.github.io/awaiting-good-news/)
 
 ## 页面内容
 
