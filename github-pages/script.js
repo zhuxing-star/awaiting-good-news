@@ -21,9 +21,11 @@ const memoryImages = [...document.querySelectorAll('.memory img')]
 const portraitImage = document.querySelector('.portrait')
 const storyImages = [...memoryImages, portraitImage]
 const startButtonLabel = startButton.textContent
+const assetCacheName = 'jiayin-assets-v20261005-25'
+const assetCacheReadyKey = 'jiayin-assets-ready'
 const assetSizes = new Map([
   ['./music/bgMusic.m4a?v=20261003-19', 3338013],
-  ['./fonts/MaShanZheng-Regular.ttf?v=20261003-21', 329660],
+  ['./fonts/MaShanZheng-Regular.ttf?v=20261005-25', 344324],
   ['./images/memories/leifeng.webp', 186398],
   ['./images/memories/west-lake.webp', 151434],
   ['./images/memories/sunset.webp', 44962],
@@ -69,12 +71,38 @@ function updateLoadingProgress(url, bytes, complete = false) {
   loadingProgress.setAttribute('aria-valuenow', String(percent))
 }
 
+function assetCacheKey(url) {
+  return new URL(url, document.baseURI).href
+}
+
+async function getAssetCache() {
+  if (!('caches' in window)) return null
+  return caches.open(assetCacheName)
+}
+
+async function hasCompleteAssetCache() {
+  if (localStorage.getItem(assetCacheReadyKey) !== assetCacheName) return false
+  const cache = await getAssetCache()
+  if (!cache) return false
+  const cachedAssets = await Promise.all([...assetSizes.keys()].map(url => cache.match(assetCacheKey(url))))
+  return cachedAssets.every(Boolean)
+}
+
 async function downloadAsset(url, attempt = 0) {
   try {
+    const cache = await getAssetCache()
+    const cacheKey = assetCacheKey(url)
+    const cachedResponse = await cache?.match(cacheKey)
+    if (cachedResponse) {
+      updateLoadingProgress(url, assetSizes.get(url), true)
+      return cachedResponse.blob()
+    }
+
     const separator = url.includes('?') ? '&' : '?'
     const requestUrl = attempt ? `${url}${separator}retry=${attempt}` : url
-    const response = await fetch(requestUrl, { cache: 'force-cache' })
+    const response = await fetch(requestUrl, { cache: 'no-cache' })
     if (!response.ok) throw new Error(`Asset request failed: ${response.status}`)
+    if (cache) await cache.put(cacheKey, response.clone())
     if (!response.body?.getReader) {
       const blob = await response.blob()
       updateLoadingProgress(url, assetSizes.get(url), true)
@@ -161,26 +189,42 @@ function prepareExperience() {
   musicButton.setAttribute('aria-label', '播放音乐')
 }
 
-async function loadCriticalAssets() {
+async function loadCriticalAssets(useCachedEntrance = false) {
   loadingRetry.hidden = true
   try {
-    const fontUrl = './fonts/MaShanZheng-Regular.ttf?v=20261003-21'
+    const fontUrl = './fonts/MaShanZheng-Regular.ttf?v=20261005-25'
     await Promise.all([
       prepareMusic(),
       preloadStoryAssets(),
       downloadAsset(fontUrl).then(() => document.fonts.load('16px "Ma Shan Zheng"'))
     ])
     updateLoadingProgress(fontUrl, assetSizes.get(fontUrl), true)
+    localStorage.setItem(assetCacheReadyKey, assetCacheName)
     prepareExperience()
-    loadingTitle.textContent = '礼物准备好了'
-    loadingNote.textContent = '所有内容已经加载完成。'
-    window.setTimeout(() => loadingScreen.classList.add('is-complete'), 450)
-    window.setTimeout(() => { loadingScreen.hidden = true }, 1100)
+    if (!useCachedEntrance) {
+      loadingTitle.textContent = '礼物准备好了'
+      loadingNote.textContent = '所有内容已经加载完成。'
+      window.setTimeout(() => loadingScreen.classList.add('is-complete'), 450)
+      window.setTimeout(() => { loadingScreen.hidden = true }, 1100)
+    }
   } catch {
+    localStorage.removeItem(assetCacheReadyKey)
+    loadingScreen.hidden = false
+    loadingScreen.classList.remove('is-complete')
     loadingTitle.textContent = '加载遇到一点问题'
     loadingNote.textContent = '当前网络不太稳定，请重新加载后再试一次。'
     loadingRetry.hidden = false
   }
+}
+
+async function initializeAssets() {
+  const useCachedEntrance = await hasCompleteAssetCache().catch(() => false)
+  if (useCachedEntrance) loadingScreen.hidden = true
+  await loadCriticalAssets(useCachedEntrance)
+}
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js?v=20261005-25').catch(() => {})
 }
 
 function enterGift() {
@@ -432,4 +476,4 @@ startButton.disabled = true
 musicButton.disabled = true
 musicButton.setAttribute('aria-label', '音乐加载中')
 initializeLock()
-loadCriticalAssets()
+initializeAssets()
