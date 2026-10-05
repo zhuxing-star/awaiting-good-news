@@ -4,7 +4,7 @@
 
 ## 在线访问
 
-[https://zhuxing-star.github.io/awaiting-good-news/](https://zhuxing-star.github.io/awaiting-good-news/)
+[https://zhuxing-star.github.io/jiayin/](https://zhuxing-star.github.io/jiayin/)
 
 ## 页面内容
 
