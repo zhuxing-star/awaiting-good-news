@@ -218,6 +218,7 @@ button:disabled { cursor: wait; opacity: .55; }
 .card h2 { flex: none; margin: 16px 0 20px; font-size: clamp(26px, 6vw, 36px); font-weight: 400; }
 .card-copy {
   flex: 1; min-height: 0; padding: 0 10px 18px 0; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y;
+  pointer-events: auto;
   color: #655f59; font-size: clamp(16px, 3.8vw, 19px); line-height: 1.9; letter-spacing: .045em;
   scrollbar-color: #d9c8b8 transparent; scrollbar-width: thin; -webkit-overflow-scrolling: touch;
 }
