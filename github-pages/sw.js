@@ -4,7 +4,7 @@ const SHELL_ASSETS = [
   './',
   './index.html',
   './style.css?v=20261005-25',
-  './script.js?v=20261005-25',
+  './script.js?v=20261007-26',
   './vendor/gsap.min.js',
   './images/template/balloon1.svg',
   './images/template/balloon2.svg',

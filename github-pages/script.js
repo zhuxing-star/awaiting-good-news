@@ -51,6 +51,13 @@ backgroundMusic.preload = 'none'
 backgroundMusic.loop = true
 backgroundMusic.volume = .82
 let musicReadyPromise = null
+let musicObjectUrl = null
+let musicShouldPlay = false
+let musicRecoveryTimer = null
+let musicWatchdogTimer = null
+let musicLastTime = 0
+let musicLastProgressAt = 0
+let musicRecovering = false
 const imageLoadPromises = new WeakMap()
 let fireworksFrame = null
 let fireworksRunning = false
@@ -153,14 +160,39 @@ function loadImage(image) {
   return imageLoadPromises.get(image)
 }
 
+function waitForMusicMetadata(timeout = 5000) {
+  if (backgroundMusic.readyState >= HTMLMediaElement.HAVE_METADATA) return Promise.resolve(backgroundMusic)
+  return new Promise((resolve, reject) => {
+    let settled = false
+    const finish = callback => {
+      if (settled) return
+      settled = true
+      window.clearTimeout(timer)
+      backgroundMusic.removeEventListener('loadedmetadata', onReady)
+      backgroundMusic.removeEventListener('canplay', onReady)
+      backgroundMusic.removeEventListener('error', onError)
+      callback(backgroundMusic)
+    }
+    const onReady = () => finish(resolve)
+    const onError = () => finish(() => reject(new Error('Music cannot be decoded')))
+    const timer = window.setTimeout(() => finish(resolve), timeout)
+    backgroundMusic.addEventListener('loadedmetadata', onReady)
+    backgroundMusic.addEventListener('canplay', onReady)
+    backgroundMusic.addEventListener('error', onError)
+  })
+}
+
 function prepareMusic() {
   if (musicReadyPromise) return musicReadyPromise
   const source = './music/bgMusic.m4a?v=20261003-19'
   musicReadyPromise = downloadAsset(source)
-    .then(blob => {
-      backgroundMusic.src = URL.createObjectURL(blob)
+    .then(async blob => {
+      if (musicObjectUrl) URL.revokeObjectURL(musicObjectUrl)
+      musicObjectUrl = URL.createObjectURL(blob)
+      backgroundMusic.src = musicObjectUrl
       backgroundMusic.preload = 'auto'
       backgroundMusic.load()
+      await waitForMusicMetadata()
       return backgroundMusic
     })
     .catch(error => {
@@ -224,7 +256,7 @@ async function initializeAssets() {
 }
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js?v=20261005-25').catch(() => {})
+  navigator.serviceWorker.register('./sw.js?v=20261007-26').catch(() => {})
 }
 
 function enterGift() {
@@ -352,27 +384,126 @@ function buildTimeline() {
   return timeline
 }
 
-async function playMusic() {
+function setMusicPlayingState() {
+  musicButton.classList.add('is-playing')
+  musicButton.setAttribute('aria-label', '暂停音乐')
+}
+
+function setMusicPausedState(label = '播放音乐') {
+  musicButton.classList.remove('is-playing')
+  musicButton.setAttribute('aria-label', label)
+}
+
+function stopMusicWatchdog() {
+  if (musicWatchdogTimer) window.clearInterval(musicWatchdogTimer)
+  musicWatchdogTimer = null
+}
+
+function scheduleMusicRecovery(delay = 1200) {
+  if (!musicShouldPlay || document.hidden || musicRecoveryTimer) return
+  musicRecoveryTimer = window.setTimeout(() => {
+    musicRecoveryTimer = null
+    recoverMusic()
+  }, delay)
+}
+
+function startMusicWatchdog() {
+  stopMusicWatchdog()
+  musicLastTime = backgroundMusic.currentTime
+  musicLastProgressAt = Date.now()
+  musicWatchdogTimer = window.setInterval(() => {
+    if (!musicShouldPlay || document.hidden) return
+    const currentTime = backgroundMusic.currentTime
+    if (currentTime > musicLastTime + .05 || currentTime < musicLastTime) {
+      musicLastTime = currentTime
+      musicLastProgressAt = Date.now()
+      return
+    }
+    if (backgroundMusic.paused || Date.now() - musicLastProgressAt > 4500) scheduleMusicRecovery(0)
+  }, 1500)
+}
+
+async function recoverMusic() {
+  if (!musicShouldPlay || document.hidden || musicRecovering) return
+  musicRecovering = true
+  const resumeAt = backgroundMusic.currentTime
   try {
+    if (!backgroundMusic.paused) backgroundMusic.pause()
+    if (Number.isFinite(resumeAt) && backgroundMusic.duration) {
+      backgroundMusic.currentTime = Math.min(resumeAt, Math.max(0, backgroundMusic.duration - .1))
+    }
     await backgroundMusic.play()
-    musicButton.classList.add('is-playing')
-    musicButton.setAttribute('aria-label', '暂停音乐')
+    if (!musicShouldPlay) {
+      backgroundMusic.pause()
+      setMusicPausedState()
+      return
+    }
+    musicLastTime = backgroundMusic.currentTime
+    musicLastProgressAt = Date.now()
+    setMusicPlayingState()
   } catch {
-    musicButton.classList.remove('is-playing')
-    musicButton.setAttribute('aria-label', '音乐加载失败')
+    musicShouldPlay = false
+    stopMusicWatchdog()
+    setMusicPausedState()
+  } finally {
+    musicRecovering = false
+  }
+}
+
+async function playMusic() {
+  musicShouldPlay = true
+  try {
+    if (!backgroundMusic.src) await prepareMusic()
+    await backgroundMusic.play()
+    if (!musicShouldPlay) {
+      backgroundMusic.pause()
+      setMusicPausedState()
+      return
+    }
+    setMusicPlayingState()
+    startMusicWatchdog()
+  } catch {
+    musicShouldPlay = false
+    stopMusicWatchdog()
+    setMusicPausedState('音乐加载失败')
   }
 }
 
 async function toggleMusic() {
-  if (backgroundMusic.paused) return playMusic()
+  if (!musicShouldPlay) return playMusic()
+  musicShouldPlay = false
+  if (musicRecoveryTimer) window.clearTimeout(musicRecoveryTimer)
+  musicRecoveryTimer = null
+  stopMusicWatchdog()
   backgroundMusic.pause()
-  musicButton.classList.remove('is-playing')
-  musicButton.setAttribute('aria-label', '播放音乐')
+  setMusicPausedState()
 }
 
 backgroundMusic.addEventListener('error', () => {
-  musicButton.classList.remove('is-playing')
-  musicButton.setAttribute('aria-label', '音乐加载失败')
+  musicShouldPlay = false
+  stopMusicWatchdog()
+  setMusicPausedState('音乐加载失败')
+})
+backgroundMusic.addEventListener('playing', () => {
+  if (!musicShouldPlay) return
+  if (musicRecoveryTimer) window.clearTimeout(musicRecoveryTimer)
+  musicRecoveryTimer = null
+  musicLastTime = backgroundMusic.currentTime
+  musicLastProgressAt = Date.now()
+  setMusicPlayingState()
+})
+backgroundMusic.addEventListener('waiting', () => scheduleMusicRecovery())
+backgroundMusic.addEventListener('stalled', () => scheduleMusicRecovery())
+backgroundMusic.addEventListener('pause', () => {
+  if (musicShouldPlay && !musicRecovering) scheduleMusicRecovery(500)
+})
+backgroundMusic.addEventListener('ended', () => scheduleMusicRecovery(0))
+
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && musicShouldPlay) scheduleMusicRecovery(250)
+})
+window.addEventListener('pageshow', () => {
+  if (musicShouldPlay && backgroundMusic.paused) scheduleMusicRecovery(250)
 })
 
 function startFireworks() {
